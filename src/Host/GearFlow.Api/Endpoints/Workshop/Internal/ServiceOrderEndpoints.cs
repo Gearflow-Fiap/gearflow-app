@@ -66,7 +66,7 @@ public sealed class ServiceOrderEndpoints : IEndpoint
             .Produces<ServiceOrderDto>()
             .ProducesValidationProblem();
 
-        group.MapPut("/{id:guid}", async (Guid id, UpdateVehicleRequest body, ISender sender, CancellationToken ct) =>
+        group.MapPut("/{id:guid}", async (Guid id, UpdateOrderVehicleRequest body, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new UpdateServiceOrderVehicleCommand(id, body.VehicleId), ct)).ToOk())
             .WithSummary("Troca o veículo da OS (bloqueado após aprovação do orçamento).")
             .WithDescription("Altera o veículo vinculado à OS. Permitido apenas antes de AwaitingApproval (409 caso contrário).")
@@ -127,7 +127,7 @@ public sealed class ServiceOrderEndpoints : IEndpoint
             .Produces(StatusCodes.Status204NoContent).Produces(StatusCodes.Status404NotFound).Produces(StatusCodes.Status409Conflict);
     }
 
-    public sealed record UpdateVehicleRequest(Guid VehicleId);
+    public sealed record UpdateOrderVehicleRequest(Guid VehicleId);
     public sealed record ExecuteJobRequest(Guid BudgetJobId);
     public sealed record FinalizeDiagnosticRequest(IReadOnlyList<DiagnosticConsumableInput> Consumables);
 }
