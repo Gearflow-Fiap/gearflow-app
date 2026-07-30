@@ -3,10 +3,9 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
-      "serviceActions": {
-        "gearflow-api": "StartDebugging",
-        "gateway": "StartWithoutDebugging"
-      }
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "gearflow-api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/scalar/v1"
     }
   }
 }
