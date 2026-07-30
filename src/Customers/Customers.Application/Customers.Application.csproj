@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Customers.Domain\Customers.Domain.csproj" />
+    <ProjectReference Include="..\..\Shared\Shared.Domain\Shared.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Customers.Infrastructure" />
+    <InternalsVisibleTo Include="Customers.UnitTests" />
+  </ItemGroup>
+
+</Project>
