@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Folder Name="/src/" />
   <Folder Name="/src/Shared/">
     <Project Path="src/Shared/Shared.Domain/Shared.Domain.csproj" />

@@ -1,0 +1,16 @@
+# Overrides aplicados automaticamente em desenvolvimento local (Visual Studio e `docker compose up`).
+# NÃO commitar segredos reais aqui — use .env ou secrets manager em produção.
+services:
+  gearflow-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8080:8080"   # Scalar em http://localhost:8080/scalar/v1
+    volumes:
+      - ./src/Host/GearFlow.Api/appsettings.Development.json:/app/appsettings.Development.json:ro
+
+  gateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5000:5000"   # entrada única: http://localhost:5000/api/**

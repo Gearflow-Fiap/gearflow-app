@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.git/
+**/.github/
+**/*.user
+**/TestResults/
+**/coverage/
+**/logs/
+**/node_modules/
+README.md
+docs/
+tests/
