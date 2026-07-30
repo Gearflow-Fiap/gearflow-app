@@ -22,6 +22,12 @@
     <ProjectReference Include="..\..\..\src\Workshop\Workshop.Domain\Workshop.Domain.csproj" />
     <ProjectReference Include="..\..\..\src\Workshop\Workshop.Application\Workshop.Application.csproj" />
     <ProjectReference Include="..\..\..\src\Workshop\Workshop.Infrastructure\Workshop.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Identity\Identity.Domain\Identity.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Identity\Identity.Application\Identity.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\Identity\Identity.Infrastructure\Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Notifications\Notifications.Domain\Notifications.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Notifications\Notifications.Application\Notifications.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
