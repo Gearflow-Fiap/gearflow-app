@@ -33,6 +33,7 @@ internal sealed class AddVehicleHandler : ICommandHandler<AddVehicleCommand, Veh
             command.LicensePlate, command.Mark, command.Model, command.Color,
             command.YearFabrication, command.YearModel, createdById, _timeProvider.GetUtcNow().UtcDateTime);
 
+        _repository.AddVehicle(vehicle);   // garante estado Added (evita UPDATE de linha inexistente)
         await _repository.SaveChangesAsync(ct);
 
         return Result.Success(VehicleDto.FromAggregate(vehicle));

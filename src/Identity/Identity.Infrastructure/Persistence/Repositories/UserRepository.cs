@@ -28,5 +28,7 @@ internal sealed class UserRepository : IUserRepository
         return user is null ? null : (user, token);
     }
 
+    public void AddRefreshToken(RefreshToken token) => _db.RefreshTokens.Add(token);
+
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }

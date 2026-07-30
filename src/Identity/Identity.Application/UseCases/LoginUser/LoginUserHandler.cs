@@ -51,7 +51,8 @@ internal sealed class LoginUserHandler : ICommandHandler<LoginUserCommand, AuthT
         user.ResetAccessFailures(now);
 
         var bundle = _tokenService.Generate(user);
-        user.IssueRefreshToken(bundle.RefreshTokenHash, bundle.RefreshTokenExpiresAtUtc, command.IpAddress, now);
+        var token = user.IssueRefreshToken(bundle.RefreshTokenHash, bundle.RefreshTokenExpiresAtUtc, command.IpAddress, now);
+        _repository.AddRefreshToken(token);
         await _repository.SaveChangesAsync(ct);
 
         return Result.Success(new AuthTokenResponse(bundle.AccessToken, bundle.RefreshTokenRaw, bundle.AccessTokenExpiresAtUtc));

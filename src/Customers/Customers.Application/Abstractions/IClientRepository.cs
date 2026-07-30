@@ -11,6 +11,7 @@ public interface IClientRepository
     void Remove(Client client);
 
     Task<Vehicle?> GetVehicleByIdAsync(VehicleId id, CancellationToken ct = default);
+    void AddVehicle(Vehicle vehicle);
     void RemoveVehicle(Vehicle vehicle);
 
     Task SaveChangesAsync(CancellationToken ct = default);

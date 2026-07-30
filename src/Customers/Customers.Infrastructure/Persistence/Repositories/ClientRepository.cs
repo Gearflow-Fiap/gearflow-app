@@ -25,6 +25,8 @@ internal sealed class ClientRepository : IClientRepository
     public async Task<Vehicle?> GetVehicleByIdAsync(VehicleId id, CancellationToken ct = default) =>
         await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == id, ct);
 
+    public void AddVehicle(Vehicle vehicle) => _db.Vehicles.Add(vehicle);
+
     public void RemoveVehicle(Vehicle vehicle) => _db.Vehicles.Remove(vehicle);
 
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
