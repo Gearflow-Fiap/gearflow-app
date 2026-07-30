@@ -17,6 +17,8 @@
     <ProjectReference Include="..\..\Customers\Customers.Infrastructure\Customers.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Inventory\Inventory.Application\Inventory.Application.csproj" />
     <ProjectReference Include="..\..\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Workshop\Workshop.Application\Workshop.Application.csproj" />
+    <ProjectReference Include="..\..\Workshop\Workshop.Infrastructure\Workshop.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
