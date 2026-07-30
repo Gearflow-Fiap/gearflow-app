@@ -21,6 +21,7 @@ os padrões do `delivery-app-backend`. Ver [ADR-001](architecture/adr-001-modula
 | Ver os diagramas (componentes + sequência) | [ARCHITECTURE_DIAGRAMS.md](architecture/ARCHITECTURE_DIAGRAMS.md) |
 | Entender a escolha do banco + modelo ER | [RFC-001 — Escolha do banco de dados](rfcs/rfc-001-escolha-do-banco-de-dados.md) |
 | Rodar/testar localmente | [`../README.md`](../README.md) |
+| Ver todos os endpoints (paridade com o legado) | [development/API_ENDPOINTS.md](development/API_ENDPOINTS.md) |
 | Entender observabilidade (Fase 3) | [OBSERVABILITY.md](architecture/OBSERVABILITY.md) |
 | Entender cobertura de testes | [development/TEST_COVERAGE.md](development/TEST_COVERAGE.md) |
 
