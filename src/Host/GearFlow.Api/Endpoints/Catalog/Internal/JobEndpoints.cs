@@ -1,6 +1,9 @@
 using Catalog.Application.DTOs;
 using Catalog.Application.UseCases.CreateJob;
+using Catalog.Application.UseCases.DeleteJob;
+using Catalog.Application.UseCases.GetJobById;
 using Catalog.Application.UseCases.GetJobs;
+using Catalog.Application.UseCases.UpdateJob;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +31,13 @@ public sealed class JobEndpoints : IEndpoint
             .Produces<IReadOnlyList<JobDto>>()
             .RequireAuthorization();
 
+        group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
+                (await sender.Send(new GetJobByIdQuery(id), ct)).ToOk())
+            .WithSummary("Busca um serviço por id.")
+            .Produces<JobDto>()
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
+
         group.MapPost("/", async (CreateJobCommand command, ISender sender, CancellationToken ct) =>
                 (await sender.Send(command, ct)).ToOk())
             .WithSummary("Cria um serviço (Job) no catálogo.")
@@ -35,5 +45,22 @@ public sealed class JobEndpoints : IEndpoint
             .Produces<JobDto>()
             .ProducesValidationProblem()
             .RequireAuthorization();
+
+        group.MapPut("/{id:guid}", async (Guid id, UpdateJobRequest body, ISender sender, CancellationToken ct) =>
+                (await sender.Send(new UpdateJobCommand(id, body.Name, body.Description, body.PriceCents), ct)).ToOk())
+            .WithSummary("Atualiza um serviço.")
+            .Produces<JobDto>()
+            .Produces(StatusCodes.Status404NotFound)
+            .ProducesValidationProblem()
+            .RequireAuthorization();
+
+        group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
+                (await sender.Send(new DeleteJobCommand(id), ct)).ToNoContent())
+            .WithSummary("Remove um serviço.")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
+
+    public sealed record UpdateJobRequest(string Name, string Description, int PriceCents);
 }
