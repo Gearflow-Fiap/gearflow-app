@@ -19,6 +19,9 @@
     <ProjectReference Include="..\..\..\src\Inventory\Inventory.Domain\Inventory.Domain.csproj" />
     <ProjectReference Include="..\..\..\src\Inventory\Inventory.Application\Inventory.Application.csproj" />
     <ProjectReference Include="..\..\..\src\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Workshop\Workshop.Domain\Workshop.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Workshop\Workshop.Application\Workshop.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\Workshop\Workshop.Infrastructure\Workshop.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

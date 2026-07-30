@@ -4,6 +4,8 @@ using Customers.Infrastructure;
 using Customers.Infrastructure.Persistence;
 using Inventory.Infrastructure;
 using Inventory.Infrastructure.Persistence;
+using Workshop.Infrastructure;
+using Workshop.Infrastructure.Persistence;
 using GearFlow.Api;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -35,6 +37,7 @@ builder.Services.AddCustomHealthChecks(connectionString, "GearFlow.Api");
 builder.Services.AddCatalogInfrastructure(builder.Configuration);
 builder.Services.AddCustomersInfrastructure(builder.Configuration);
 builder.Services.AddInventoryInfrastructure(builder.Configuration);
+builder.Services.AddWorkshopInfrastructure(builder.Configuration);
 
 // OpenAPI / Scalar
 builder.Services.AddOpenApi();
@@ -48,6 +51,7 @@ if (!app.Environment.IsEnvironment("Testing"))
     await scope.ServiceProvider.GetRequiredService<CatalogDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<CustomersDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<InventoryDbContext>().Database.MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<WorkshopDbContext>().Database.MigrateAsync();
 }
 
 app.UseExceptionHandling();
