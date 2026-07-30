@@ -2,6 +2,7 @@ using Inventory.Application.Abstractions;
 using Inventory.Application.DTOs;
 using Inventory.Domain.ValueObjects;
 using MediatR;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Inventory;
 using Shared.Domain.Primitives;
 
@@ -33,7 +34,7 @@ internal sealed class AddConsumableStockHandler : ICommandHandler<AddConsumableS
         await _repository.SaveChangesAsync(ct);
 
         await _publisher.Publish(
-            new PartsReplenishedIntegrationEvent(Guid.NewGuid(), _timeProvider.GetUtcNow().UtcDateTime, "Consumable", consumable.Id.Value),
+            new PartsReplenishedIntegrationEvent(Guid.NewGuid(), _timeProvider.GetUtcNow().UtcDateTime, InventoryItemType.Consumable, consumable.Id.Value),
             ct);
 
         return Result.Success(ConsumableDto.FromAggregate(consumable));

@@ -1,4 +1,5 @@
 using MediatR;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Inventory;
 using Shared.Domain.Primitives;
 using Shared.Domain.Security;
@@ -49,8 +50,8 @@ internal sealed class FinalizeServiceOrderHandler : ICommandHandler<FinalizeServ
         if (transition.IsFailure) return transition;
 
         var items = budget.Parts
-            .Select(p => new ReservationItem("Part", p.PartId, p.Quantity))
-            .Concat(budget.Consumables.Select(c => new ReservationItem("Consumable", c.ConsumableId, c.Quantity)))
+            .Select(p => new ReservationItem(InventoryItemType.Part, p.PartId, p.Quantity))
+            .Concat(budget.Consumables.Select(c => new ReservationItem(InventoryItemType.Consumable, c.ConsumableId, c.Quantity)))
             .ToList();
 
         var consume = await _inventory.ConsumeAsync(items, ct);

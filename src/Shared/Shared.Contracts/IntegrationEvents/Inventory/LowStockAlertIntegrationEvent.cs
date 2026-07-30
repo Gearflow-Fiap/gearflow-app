@@ -8,7 +8,7 @@ namespace Shared.Contracts.IntegrationEvents.Inventory;
 public sealed record LowStockAlertIntegrationEvent(
     Guid EventId,
     DateTime OccurredOn,
-    string ItemType,      // "Part" | "Consumable"
+    InventoryItemType ItemType,
     Guid ItemId,
     string ItemName,
     decimal RemainingQuantity,

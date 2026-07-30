@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Notifications.Application.Abstractions;
 using Notifications.Domain.Aggregates;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Inventory;
 
 namespace Notifications.Application.EventHandlers;
@@ -32,7 +33,7 @@ internal sealed class LowStockAlertHandler : INotificationHandler<LowStockAlertI
         var message = $"O item '{e.ItemName}' ({e.ItemType}) está em {e.RemainingQuantity} (mínimo {e.MinimumQuantity}).";
 
         var notification = new Notification(
-            e.ItemType == "Part" ? NotificationType.Part : NotificationType.Consumable,
+            e.ItemType == InventoryItemType.Part ? NotificationType.Part : NotificationType.Consumable,
             NotificationChannel.Email, title, message, "system@gearflow.com", StockEmail, e.OccurredOn);
 
         await _repository.AddAsync(notification, ct);

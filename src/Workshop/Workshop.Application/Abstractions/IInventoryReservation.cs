@@ -1,12 +1,14 @@
+using Shared.Contracts;
+
 namespace Workshop.Application.Abstractions;
 
 /// <summary>Item de estoque a reservar/consumir por conta de um orçamento.</summary>
-public sealed record ReservationItem(string ItemType, Guid ItemId, decimal Quantity);
+public sealed record ReservationItem(InventoryItemType ItemType, Guid ItemId, decimal Quantity);
 
 public enum ReservationStatus { Ok, Insufficient }
 
 /// <summary>Item que ficou no/abaixo do estoque mínimo após um consumo — dispara o alerta.</summary>
-public sealed record LowStockItem(string ItemType, Guid ItemId, string ItemName, decimal Remaining, decimal Minimum);
+public sealed record LowStockItem(InventoryItemType ItemType, Guid ItemId, string ItemName, decimal Remaining, decimal Minimum);
 
 public sealed record ReservationResult(
     ReservationStatus Status,

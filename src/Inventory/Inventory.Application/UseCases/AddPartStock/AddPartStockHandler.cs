@@ -2,6 +2,7 @@ using Inventory.Application.Abstractions;
 using Inventory.Application.DTOs;
 using Inventory.Domain.ValueObjects;
 using MediatR;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Inventory;
 using Shared.Domain.Primitives;
 
@@ -38,7 +39,7 @@ internal sealed class AddPartStockHandler : ICommandHandler<AddPartStockCommand,
         await _repository.SaveChangesAsync(ct);
 
         await _publisher.Publish(
-            new PartsReplenishedIntegrationEvent(Guid.NewGuid(), _timeProvider.GetUtcNow().UtcDateTime, "Part", part.Id.Value),
+            new PartsReplenishedIntegrationEvent(Guid.NewGuid(), _timeProvider.GetUtcNow().UtcDateTime, InventoryItemType.Part, part.Id.Value),
             ct);
 
         return Result.Success(PartDto.FromAggregate(part));

@@ -10,6 +10,7 @@ using Workshop.Application.UseCases.FinalizeDiagnostic;
 using Workshop.Application.UseCases.GetServiceOrders;
 using Workshop.Application.EventHandlers;
 using Workshop.Application.UseCases.ResumeExecution;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Inventory;
 using Workshop.Domain.Aggregates.BudgetModel;
 using Workshop.Domain.Aggregates.ServiceOrderModel;
@@ -168,7 +169,7 @@ public sealed class ServiceOrderHandlerTests
             .Returns(new ReservationResult(ReservationStatus.Ok));
 
         var handler = new PartsReplenishedHandler(_orders, _budgets, _inventory, TimeProvider.System);
-        await handler.Handle(new PartsReplenishedIntegrationEvent(Guid.NewGuid(), Now, "Part", partId), CancellationToken.None);
+        await handler.Handle(new PartsReplenishedIntegrationEvent(Guid.NewGuid(), Now, InventoryItemType.Part, partId), CancellationToken.None);
 
         order.Status.Should().Be(ServiceOrderStatus.InExecution);
         await _orders.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -183,7 +184,7 @@ public sealed class ServiceOrderHandlerTests
         _budgets.GetByServiceOrderAsync(order.Id, Arg.Any<CancellationToken>()).Returns(budget);
 
         var handler = new PartsReplenishedHandler(_orders, _budgets, _inventory, TimeProvider.System);
-        await handler.Handle(new PartsReplenishedIntegrationEvent(Guid.NewGuid(), Now, "Part", Guid.NewGuid()), CancellationToken.None);
+        await handler.Handle(new PartsReplenishedIntegrationEvent(Guid.NewGuid(), Now, InventoryItemType.Part, Guid.NewGuid()), CancellationToken.None);
 
         order.Status.Should().Be(ServiceOrderStatus.AwaitingPartsOrConsumables);
         await _inventory.DidNotReceive().ReserveAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>());

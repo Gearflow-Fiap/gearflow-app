@@ -1,4 +1,5 @@
 using MediatR;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Inventory;
 using Shared.Domain.Security;
 using Workshop.Application.Abstractions;
@@ -37,14 +38,14 @@ internal sealed class PartsReplenishedHandler : INotificationHandler<PartsReplen
                 continue;
 
             var references =
-                (e.ItemType == "Part" && budget.Parts.Any(p => p.PartId == e.ItemId)) ||
-                (e.ItemType == "Consumable" && budget.Consumables.Any(c => c.ConsumableId == e.ItemId));
+                (e.ItemType == InventoryItemType.Part && budget.Parts.Any(p => p.PartId == e.ItemId)) ||
+                (e.ItemType == InventoryItemType.Consumable && budget.Consumables.Any(c => c.ConsumableId == e.ItemId));
             if (!references)
                 continue;
 
             var items = budget.Parts
-                .Select(p => new ReservationItem("Part", p.PartId, p.Quantity))
-                .Concat(budget.Consumables.Select(c => new ReservationItem("Consumable", c.ConsumableId, c.Quantity)))
+                .Select(p => new ReservationItem(InventoryItemType.Part, p.PartId, p.Quantity))
+                .Concat(budget.Consumables.Select(c => new ReservationItem(InventoryItemType.Consumable, c.ConsumableId, c.Quantity)))
                 .ToList();
 
             var reservation = await _inventory.ReserveAsync(items, ct);

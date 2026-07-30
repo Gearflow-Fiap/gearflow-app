@@ -1,3 +1,4 @@
+using Shared.Contracts;
 using Shared.Domain.Primitives;
 using Shared.Domain.Security;
 using Workshop.Application.Abstractions;
@@ -40,8 +41,8 @@ internal sealed class ResumeExecutionHandler : ICommandHandler<ResumeExecutionCo
             return Result.Failure(Error.NotFound("Budget.NotFound", "Orçamento não encontrado para esta OS."));
 
         var items = budget.Parts
-            .Select(p => new ReservationItem("Part", p.PartId, p.Quantity))
-            .Concat(budget.Consumables.Select(c => new ReservationItem("Consumable", c.ConsumableId, c.Quantity)))
+            .Select(p => new ReservationItem(InventoryItemType.Part, p.PartId, p.Quantity))
+            .Concat(budget.Consumables.Select(c => new ReservationItem(InventoryItemType.Consumable, c.ConsumableId, c.Quantity)))
             .ToList();
 
         var reservation = await _inventory.ReserveAsync(items, ct);

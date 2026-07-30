@@ -1,4 +1,5 @@
 using MediatR;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Workshop;
 using Shared.Domain.Primitives;
 using Shared.Domain.Security;
@@ -49,8 +50,8 @@ internal sealed class ApproveBudgetByIdHandler : ICommandHandler<ApproveBudgetBy
         if (approve.IsFailure) return approve;
 
         var items = budget.Parts
-            .Select(p => new ReservationItem("Part", p.PartId, p.Quantity))
-            .Concat(budget.Consumables.Select(c => new ReservationItem("Consumable", c.ConsumableId, c.Quantity)))
+            .Select(p => new ReservationItem(InventoryItemType.Part, p.PartId, p.Quantity))
+            .Concat(budget.Consumables.Select(c => new ReservationItem(InventoryItemType.Consumable, c.ConsumableId, c.Quantity)))
             .ToList();
 
         var reservation = await _inventory.ReserveAsync(items, ct);

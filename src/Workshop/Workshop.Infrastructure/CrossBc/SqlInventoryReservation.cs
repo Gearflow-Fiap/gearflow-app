@@ -1,4 +1,5 @@
 using Microsoft.Data.SqlClient;
+using Shared.Contracts;
 using Workshop.Application.Abstractions;
 
 namespace Workshop.Infrastructure.CrossBc;
@@ -36,7 +37,7 @@ internal sealed class SqlInventoryReservation : IInventoryReservation
 
         foreach (var item in items)
         {
-            var table = item.ItemType == "Part" ? "inventory.parts" : "inventory.consumables";
+            var table = item.ItemType == InventoryItemType.Part ? "inventory.parts" : "inventory.consumables";
             var guard = reserve ? "quantity >= @q" : "reserved_quantity >= @q";
             var setClause = reserve
                 ? "quantity = quantity - @q, reserved_quantity = reserved_quantity + @q"

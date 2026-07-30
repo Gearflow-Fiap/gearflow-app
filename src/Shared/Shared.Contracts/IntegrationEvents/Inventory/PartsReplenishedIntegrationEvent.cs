@@ -8,5 +8,5 @@ namespace Shared.Contracts.IntegrationEvents.Inventory;
 public sealed record PartsReplenishedIntegrationEvent(
     Guid EventId,
     DateTime OccurredOn,
-    string ItemType,      // "Part" | "Consumable"
+    InventoryItemType ItemType,
     Guid ItemId) : IIntegrationEvent;

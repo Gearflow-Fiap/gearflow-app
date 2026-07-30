@@ -5,6 +5,7 @@ using Notifications.Application.Abstractions;
 using Notifications.Application.EventHandlers;
 using Notifications.Domain.Aggregates;
 using NSubstitute;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Inventory;
 using Shared.Contracts.IntegrationEvents.Workshop;
 
@@ -68,7 +69,7 @@ public sealed class NotificationHandlerTests
     public async Task LowStockAlert_records_and_tries_email()
     {
         var handler = new LowStockAlertHandler(_repo, _email, NullLogger<LowStockAlertHandler>.Instance);
-        await handler.Handle(new LowStockAlertIntegrationEvent(Guid.NewGuid(), Now, "Part", Guid.NewGuid(), "Filtro", 3, 5), CancellationToken.None);
+        await handler.Handle(new LowStockAlertIntegrationEvent(Guid.NewGuid(), Now, InventoryItemType.Part, Guid.NewGuid(), "Filtro", 3, 5), CancellationToken.None);
 
         await _repo.Received(1).AddAsync(Arg.Any<Notification>(), Arg.Any<CancellationToken>());
         await _email.Received(1).SendAsync("estoque@gearflow.com", Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
