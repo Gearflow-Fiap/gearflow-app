@@ -8,6 +8,7 @@ using Workshop.Infrastructure;
 using Workshop.Infrastructure.Persistence;
 using Identity.Infrastructure;
 using Identity.Infrastructure.Persistence;
+using Identity.Infrastructure.Security;
 using Notifications.Infrastructure;
 using Notifications.Infrastructure.Persistence;
 using GearFlow.Api;
@@ -44,6 +45,9 @@ builder.Services.AddInventoryInfrastructure(builder.Configuration);
 builder.Services.AddWorkshopInfrastructure(builder.Configuration);
 builder.Services.AddIdentityInfrastructure(builder.Configuration);
 builder.Services.AddNotificationsInfrastructure(builder.Configuration);
+
+// Revalidação server-side do security_stamp (invalida JWT de staff após troca de senha).
+builder.Services.AddStaffSecurityStampValidation();
 
 // OpenAPI / Scalar
 builder.Services.AddOpenApi();

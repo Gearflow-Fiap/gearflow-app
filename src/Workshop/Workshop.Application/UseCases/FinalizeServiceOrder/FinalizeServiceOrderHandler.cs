@@ -1,3 +1,5 @@
+using MediatR;
+using Shared.Contracts.IntegrationEvents.Inventory;
 using Shared.Domain.Primitives;
 using Shared.Domain.Security;
 using Workshop.Application.Abstractions;
@@ -14,16 +16,18 @@ internal sealed class FinalizeServiceOrderHandler : ICommandHandler<FinalizeServ
     private readonly IServiceOrderRepository _orders;
     private readonly IBudgetRepository _budgets;
     private readonly IInventoryReservation _inventory;
+    private readonly IPublisher _publisher;
     private readonly ICurrentActor _currentActor;
     private readonly TimeProvider _timeProvider;
 
     public FinalizeServiceOrderHandler(
         IServiceOrderRepository orders, IBudgetRepository budgets, IInventoryReservation inventory,
-        ICurrentActor currentActor, TimeProvider timeProvider)
+        IPublisher publisher, ICurrentActor currentActor, TimeProvider timeProvider)
     {
         _orders = orders;
         _budgets = budgets;
         _inventory = inventory;
+        _publisher = publisher;
         _currentActor = currentActor;
         _timeProvider = timeProvider;
     }
@@ -54,6 +58,14 @@ internal sealed class FinalizeServiceOrderHandler : ICommandHandler<FinalizeServ
             return Result.Failure(Error.Conflict("Inventory.ConsumeFailed", consume.Detail ?? "Falha ao consumir estoque."));
 
         await _orders.SaveChangesAsync(ct);
+
+        // Alerta de estoque baixo → Notifications (evento in-process). Preserva o LowStockAlert do GearFlow.
+        foreach (var low in consume.LowStock ?? [])
+            await _publisher.Publish(
+                new LowStockAlertIntegrationEvent(
+                    Guid.NewGuid(), now, low.ItemType, low.ItemId, low.ItemName, low.Remaining, low.Minimum),
+                ct);
+
         return Result.Success();
     }
 }

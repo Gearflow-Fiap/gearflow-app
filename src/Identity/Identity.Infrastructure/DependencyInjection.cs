@@ -18,6 +18,7 @@ public static class DependencyInjection
 
         services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ISecurityStampValidator, Security.SecurityStampValidator>();
         services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
         services.AddScoped<ITokenService, JwtTokenService>();
 
