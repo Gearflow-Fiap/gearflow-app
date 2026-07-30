@@ -49,8 +49,9 @@ builder.Services.AddNotificationsInfrastructure(builder.Configuration);
 // Revalidação server-side do security_stamp (invalida JWT de staff após troca de senha).
 builder.Services.AddStaffSecurityStampValidation();
 
-// OpenAPI / Scalar
-builder.Services.AddOpenApi();
+// OpenAPI / Scalar — declara o esquema Bearer para o botão "Authorize" do Scalar.
+builder.Services.AddOpenApi(options =>
+    options.AddDocumentTransformer<GearFlow.Api.OpenApi.BearerSecuritySchemeTransformer>());
 
 var app = builder.Build();
 
