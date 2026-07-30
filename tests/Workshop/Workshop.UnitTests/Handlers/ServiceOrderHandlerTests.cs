@@ -8,7 +8,9 @@ using Workshop.Application.UseCases.ApproveBudget;
 using Workshop.Application.UseCases.ExecuteJob;
 using Workshop.Application.UseCases.FinalizeDiagnostic;
 using Workshop.Application.UseCases.GetServiceOrders;
+using Workshop.Application.EventHandlers;
 using Workshop.Application.UseCases.ResumeExecution;
+using Shared.Contracts.IntegrationEvents.Inventory;
 using Workshop.Domain.Aggregates.BudgetModel;
 using Workshop.Domain.Aggregates.ServiceOrderModel;
 using Workshop.Domain.Enums;
@@ -152,6 +154,39 @@ public sealed class ServiceOrderHandlerTests
         await _budgets.Received(1).AddAsync(Arg.Any<Budget>(), Arg.Any<CancellationToken>());
         await _publisher.Received(1).Publish(
             Arg.Is<BudgetGeneratedIntegrationEvent>(e => e.ClientEmail == "joao@x.com"), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task PartsReplenished_resumes_eligible_awaiting_order()
+    {
+        var partId = Guid.NewGuid();
+        var (order, budget) = AtAwaitingApproval(Guid.NewGuid(), partId, 2);
+        order.WaitingPartsOrConsumables(Actor.System, Now); // AwaitingPartsOrConsumables
+        _orders.GetAwaitingPartsAsync(Arg.Any<CancellationToken>()).Returns(new List<ServiceOrder> { order });
+        _budgets.GetByServiceOrderAsync(order.Id, Arg.Any<CancellationToken>()).Returns(budget);
+        _inventory.ReserveAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>())
+            .Returns(new ReservationResult(ReservationStatus.Ok));
+
+        var handler = new PartsReplenishedHandler(_orders, _budgets, _inventory, TimeProvider.System);
+        await handler.Handle(new PartsReplenishedIntegrationEvent(Guid.NewGuid(), Now, "Part", partId), CancellationToken.None);
+
+        order.Status.Should().Be(ServiceOrderStatus.InExecution);
+        await _orders.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task PartsReplenished_ignores_orders_not_referencing_the_item()
+    {
+        var (order, budget) = AtAwaitingApproval(Guid.NewGuid(), Guid.NewGuid(), 2);
+        order.WaitingPartsOrConsumables(Actor.System, Now);
+        _orders.GetAwaitingPartsAsync(Arg.Any<CancellationToken>()).Returns(new List<ServiceOrder> { order });
+        _budgets.GetByServiceOrderAsync(order.Id, Arg.Any<CancellationToken>()).Returns(budget);
+
+        var handler = new PartsReplenishedHandler(_orders, _budgets, _inventory, TimeProvider.System);
+        await handler.Handle(new PartsReplenishedIntegrationEvent(Guid.NewGuid(), Now, "Part", Guid.NewGuid()), CancellationToken.None);
+
+        order.Status.Should().Be(ServiceOrderStatus.AwaitingPartsOrConsumables);
+        await _inventory.DidNotReceive().ReserveAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

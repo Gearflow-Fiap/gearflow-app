@@ -51,5 +51,12 @@ internal sealed class ServiceOrderRepository : IServiceOrderRepository
         return (items, total);
     }
 
+    public async Task<IReadOnlyList<ServiceOrder>> GetAwaitingPartsAsync(CancellationToken ct = default) =>
+        await _db.ServiceOrders   // rastreadas: serão mutadas no auto-resume
+            .Include(o => o.Histories)
+            .Where(o => o.IsActive && o.Status == ServiceOrderStatus.AwaitingPartsOrConsumables)
+            .OrderBy(o => o.CreatedOn)
+            .ToListAsync(ct);
+
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }

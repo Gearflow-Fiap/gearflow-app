@@ -13,5 +13,8 @@ public interface IServiceOrderRepository
     Task<(IReadOnlyList<ServiceOrder> Items, int TotalCount)> GetPagedByPriorityAsync(
         int page, int pageSize, CancellationToken ct = default);
 
+    /// <summary>OS paradas aguardando peças/insumos, mais antigas primeiro (para o auto-resume). Rastreadas.</summary>
+    Task<IReadOnlyList<ServiceOrder>> GetAwaitingPartsAsync(CancellationToken ct = default);
+
     Task SaveChangesAsync(CancellationToken ct = default);
 }
