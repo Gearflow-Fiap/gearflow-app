@@ -181,7 +181,42 @@ cross-BC).
 
 ---
 
-## 5. Estados da Ordem de Serviço
+## 5. Eventos de integração & notificações (in-process)
+
+Preservados do GearFlow como contratos em `Shared.Contracts`, despachados via MediatR entre BCs no
+mesmo processo (ver [ADR-001](adr-001-modular-monolith-bounded-contexts.md) §4).
+
+```mermaid
+flowchart LR
+    subgraph Workshop
+        FD[FinalizeDiagnostic] -->|BudgetGenerated| N1
+        AB[ApproveBudget] -->|BudgetApproved| N2
+        AB -->|StockMissing (sem estoque)| N3
+        FIN[FinalizeServiceOrder] -->|LowStockAlert| N4
+    end
+    subgraph Inventory
+        REP[AddStock] -->|PartsReplenished| WS[Workshop: auto-resume]
+    end
+    subgraph Notifications
+        N1[BudgetGeneratedEmailHandler<br/>e-mail ao cliente + registro]
+        N2[BudgetApprovedNotificationHandler<br/>aviso à oficina]
+        N3[StockMissingNotificationHandler<br/>aviso ao estoquista]
+        N4[LowStockAlertHandler<br/>aviso ao estoquista]
+    end
+```
+
+| Evento | Publicado em | Consumido por | Efeito |
+|---|---|---|---|
+| `BudgetGeneratedIntegrationEvent` | Finalização do diagnóstico | Notifications | E-mail ao cliente com links aprovar/rejeitar + notificação |
+| `BudgetApprovedIntegrationEvent` | Aprovação do orçamento | Notifications | Aviso interno (execução iniciada ou aguardando peças) |
+| `StockMissingIntegrationEvent` | Aprovação sem estoque | Notifications | Aviso ao estoquista |
+| `LowStockAlertIntegrationEvent` | Consumo na finalização | Notifications | Aviso de estoque mínimo |
+| `PartsReplenishedIntegrationEvent` | Reposição de estoque | Workshop | Reavalia OS aguardando peças (auto-resume) |
+
+O e-mail do cliente é resolvido por leitura cross-BC (`ICustomerContactReader`, SQL cru contra
+`customers.*` — ADR-011).
+
+## 6. Estados da Ordem de Serviço
 
 ```mermaid
 stateDiagram-v2

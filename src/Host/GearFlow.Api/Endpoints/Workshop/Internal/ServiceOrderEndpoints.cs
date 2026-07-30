@@ -33,10 +33,10 @@ public sealed class ServiceOrderEndpoints : IEndpoint
     {
         var group = app.MapGroup("/api/workshop/service-orders").WithTags("Workshop").RequireAuthorization();
 
-        group.MapGet("/", async (ISender sender, CancellationToken ct) =>
-                (await sender.Send(new GetServiceOrdersQuery(), ct)).ToOk())
-            .WithSummary("Lista as ordens de serviço ativas.")
-            .Produces<IReadOnlyList<ServiceOrderDto>>();
+        group.MapGet("/", async (int? page, int? pageSize, ISender sender, CancellationToken ct) =>
+                (await sender.Send(new GetServiceOrdersQuery(page ?? 1, pageSize ?? 20), ct)).ToOk())
+            .WithSummary("Lista as ordens de serviço ativas (paginado, ordenado por prioridade de status).")
+            .Produces<PagedResult<ServiceOrderDto>>();
 
         group.MapGet("/monitoring-average", async (ISender sender, CancellationToken ct) =>
                 (await sender.Send(new GetExecutionAverageQuery(), ct)).ToOk())

@@ -1,3 +1,5 @@
+using MediatR;
+using Shared.Contracts.IntegrationEvents.Workshop;
 using Shared.Domain.Primitives;
 using Shared.Domain.Security;
 using Workshop.Application.Abstractions;
@@ -16,16 +18,20 @@ internal sealed class FinalizeDiagnosticHandler : ICommandHandler<FinalizeDiagno
     private readonly IServiceOrderRepository _orders;
     private readonly IBudgetRepository _budgets;
     private readonly IPricingReader _pricing;
+    private readonly ICustomerContactReader _contacts;
+    private readonly IPublisher _publisher;
     private readonly ICurrentActor _currentActor;
     private readonly TimeProvider _timeProvider;
 
     public FinalizeDiagnosticHandler(
         IServiceOrderRepository orders, IBudgetRepository budgets, IPricingReader pricing,
-        ICurrentActor currentActor, TimeProvider timeProvider)
+        ICustomerContactReader contacts, IPublisher publisher, ICurrentActor currentActor, TimeProvider timeProvider)
     {
         _orders = orders;
         _budgets = budgets;
         _pricing = pricing;
+        _contacts = contacts;
+        _publisher = publisher;
         _currentActor = currentActor;
         _timeProvider = timeProvider;
     }
@@ -60,6 +66,14 @@ internal sealed class FinalizeDiagnosticHandler : ICommandHandler<FinalizeDiagno
 
         await _budgets.AddAsync(budget, ct);
         await _orders.SaveChangesAsync(ct); // mesmo DbContext do Workshop → uma transação
+
+        // Notifica o cliente (e-mail com links de aprovar/rejeitar) — preserva o BudgetGeneratedEvent.
+        var contact = await _contacts.GetByVehicleAsync(order.VehicleId, ct);
+        await _publisher.Publish(
+            new BudgetGeneratedIntegrationEvent(
+                Guid.NewGuid(), now, budget.Id.Value, order.Id.Value,
+                contact?.Name ?? string.Empty, contact?.Email ?? string.Empty, budget.TotalPriceCents),
+            ct);
 
         return Result.Success();
     }

@@ -20,9 +20,10 @@ public static class DependencyInjection
         services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
         services.AddScoped<IBudgetRepository, BudgetRepository>();
 
-        // Portas cross-BC (ADR-011): SQL cru contra catalog.jobs / inventory.parts / inventory.consumables.
+        // Portas cross-BC (ADR-011): SQL cru contra catalog.jobs / inventory.* / customers.*.
         services.AddScoped<IPricingReader>(_ => new SqlPricingReader(connectionString));
         services.AddScoped<IInventoryReservation>(_ => new SqlInventoryReservation(connectionString));
+        services.AddScoped<ICustomerContactReader>(_ => new SqlCustomerContactReader(connectionString));
 
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(Application.Abstractions.ICommand).Assembly));

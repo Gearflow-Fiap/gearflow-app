@@ -64,6 +64,10 @@ if (!app.Environment.IsEnvironment("Testing"))
     await scope.ServiceProvider.GetRequiredService<WorkshopDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<IdentityDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<NotificationsDbContext>().Database.MigrateAsync();
+
+    // Seed de staff só em Development (paridade com o AdminSeeder legado).
+    if (app.Environment.IsDevelopment())
+        await IdentitySeeder.SeedAsync(app.Services);
 }
 
 app.UseExceptionHandling();

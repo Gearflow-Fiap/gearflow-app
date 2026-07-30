@@ -64,4 +64,7 @@
   <Folder Name="/tests/Identity/">
     <Project Path="tests/Identity/Identity.UnitTests/Identity.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/tests/Notifications/">
+    <Project Path="tests/Notifications/Notifications.UnitTests/Notifications.UnitTests.csproj" />
+  </Folder>
 </Solution>

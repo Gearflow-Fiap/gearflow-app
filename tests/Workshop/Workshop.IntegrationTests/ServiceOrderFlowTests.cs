@@ -8,9 +8,13 @@ using Identity.Application.UseCases.RegisterUser;
 using Inventory.Application.UseCases.CreatePart;
 using Inventory.Application.UseCases.GetParts;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Notifications.Domain.Aggregates;
+using Notifications.Infrastructure.Persistence;
 using Shared.Domain.Primitives;
 using Workshop.Application.DTOs;
+using Workshop.Application.UseCases.GetServiceOrders;
 using Workshop.Application.UseCases.ApproveBudget;
 using Workshop.Application.UseCases.CreateServiceOrder;
 using Workshop.Application.UseCases.DeliverServiceOrder;
@@ -73,6 +77,19 @@ public sealed class ServiceOrderFlowTests
         var updated = parts.Single(p => p.Id == part.Id);
         updated.Quantity.Should().Be(98);
         updated.ReservedQuantity.Should().Be(0);
+
+        // Notificações in-process foram gravadas (orçamento gerado + aprovado).
+        using (var scope = _fixture.CreateScope())
+        {
+            var ndb = scope.ServiceProvider.GetRequiredService<NotificationsDbContext>();
+            var notifications = await ndb.Notifications.AsNoTracking().ToListAsync();
+            notifications.Should().Contain(n => n.Type == NotificationType.Budget);
+        }
+
+        // A listagem paginada por prioridade não inclui OS entregues (Delivered).
+        var paged = (await Send(new GetServiceOrdersQuery(1, 10))).Value;
+        paged.PageSize.Should().Be(10);
+        paged.Items.Should().NotContain(o => o.Id == osId);
     }
 
     [Fact]

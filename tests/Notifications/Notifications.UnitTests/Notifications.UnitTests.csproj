@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Workshop\Workshop.Domain\Workshop.Domain.csproj" />
-    <ProjectReference Include="..\..\..\src\Workshop\Workshop.Application\Workshop.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\Notifications\Notifications.Application\Notifications.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,6 +14,8 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 
