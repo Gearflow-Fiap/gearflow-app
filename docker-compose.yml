@@ -1,0 +1,47 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-Your_password123}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"   # UI
+      - "1025:1025"   # SMTP
+
+  gearflow-api:
+    build:
+      context: .
+      dockerfile: src/Host/GearFlow.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__GearFlow: "Server=sqlserver,1433;Database=gearflow;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Your_password123};TrustServerCertificate=True"
+      Jwt__Secret: "${JWT_SECRET:-dev-only-super-secret-change-me-32chars-minimum}"
+      Jwt__Issuer: "gearflow"
+      Jwt__Audience: "gearflow"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  gateway:
+    build:
+      context: .
+      dockerfile: src/Gateway/Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - gearflow-api
+
+volumes:
+  sqlserver-data:

@@ -1,0 +1,26 @@
+<Project>
+
+  <!--
+    Common MSBuild properties for every project (src + tests). Individual .csproj files
+    no longer repeat TargetFramework / Nullable / ImplicitUsings — they inherit from here.
+    Project-specific settings (OutputType, IsPackable, UserSecretsId) stay in the .csproj.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!--
+      Compiler (CS) warnings are errors — keeps nullable/unused/obsolete warnings from
+      accumulating. TreatWarningsAsErrors makes the build the C# linter (no separate tool).
+    -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!--
+      Analisadores do .NET no nível mais recente. O baseline de severidade em .editorconfig
+      (dotnet_analyzer_diagnostic.severity = suggestion) mantém os diagnósticos como sugestões —
+      não quebram o build sob TreatWarningsAsErrors. EnforceCodeStyleInBuild roda as regras IDExxxx.
+    -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+</Project>

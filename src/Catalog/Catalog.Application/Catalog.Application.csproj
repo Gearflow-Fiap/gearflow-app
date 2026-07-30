@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.csproj" />
+    <ProjectReference Include="..\..\Shared\Shared.Domain\Shared.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+
+  <!-- Handlers são internal sealed; a impl de Infrastructure e os testes precisam enxergá-los. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Catalog.Infrastructure" />
+    <InternalsVisibleTo Include="Catalog.UnitTests" />
+  </ItemGroup>
+
+</Project>
