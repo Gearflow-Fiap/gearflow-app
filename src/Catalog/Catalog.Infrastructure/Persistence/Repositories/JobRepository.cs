@@ -20,5 +20,7 @@ internal sealed class JobRepository : IJobRepository
     public async Task<IReadOnlyList<Job>> ListAsync(CancellationToken ct = default) =>
         await _db.Jobs.AsNoTracking().OrderBy(j => j.Name).ToListAsync(ct);
 
+    public void Remove(Job job) => _db.Jobs.Remove(job);
+
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }

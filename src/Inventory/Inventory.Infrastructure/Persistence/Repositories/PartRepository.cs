@@ -19,5 +19,7 @@ internal sealed class PartRepository : IPartRepository
     public async Task<IReadOnlyList<Part>> ListAsync(CancellationToken ct = default) =>
         await _db.Parts.AsNoTracking().OrderBy(p => p.Name).ToListAsync(ct);
 
+    public void Remove(Part part) => _db.Parts.Remove(part);
+
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }

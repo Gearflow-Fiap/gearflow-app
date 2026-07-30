@@ -20,5 +20,7 @@ internal sealed class ConsumableRepository : IConsumableRepository
     public async Task<IReadOnlyList<Consumable>> ListAsync(CancellationToken ct = default) =>
         await _db.Consumables.AsNoTracking().OrderBy(c => c.Name).ToListAsync(ct);
 
+    public void Remove(Consumable consumable) => _db.Consumables.Remove(consumable);
+
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }
