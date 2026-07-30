@@ -5,7 +5,13 @@ public sealed record ReservationItem(string ItemType, Guid ItemId, decimal Quant
 
 public enum ReservationStatus { Ok, Insufficient }
 
-public sealed record ReservationResult(ReservationStatus Status, string? Detail = null);
+/// <summary>Item que ficou no/abaixo do estoque mínimo após um consumo — dispara o alerta.</summary>
+public sealed record LowStockItem(string ItemType, Guid ItemId, string ItemName, decimal Remaining, decimal Minimum);
+
+public sealed record ReservationResult(
+    ReservationStatus Status,
+    string? Detail = null,
+    IReadOnlyList<LowStockItem>? LowStock = null);
 
 /// <summary>
 /// Porta do Workshop para o estoque (Inventory) — preserva a regra do GearFlow de reservar na
