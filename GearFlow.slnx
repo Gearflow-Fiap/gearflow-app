@@ -21,6 +21,11 @@
     <Project Path="src/Customers/Customers.Application/Customers.Application.csproj" />
     <Project Path="src/Customers/Customers.Infrastructure/Customers.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Inventory/">
+    <Project Path="src/Inventory/Inventory.Domain/Inventory.Domain.csproj" />
+    <Project Path="src/Inventory/Inventory.Application/Inventory.Application.csproj" />
+    <Project Path="src/Inventory/Inventory.Infrastructure/Inventory.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/Architecture/">
     <Project Path="tests/Architecture/Architecture.Tests/Architecture.Tests.csproj" />
@@ -30,5 +35,8 @@
   </Folder>
   <Folder Name="/tests/Customers/">
     <Project Path="tests/Customers/Customers.UnitTests/Customers.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Inventory/">
+    <Project Path="tests/Inventory/Inventory.UnitTests/Inventory.UnitTests.csproj" />
   </Folder>
 </Solution>

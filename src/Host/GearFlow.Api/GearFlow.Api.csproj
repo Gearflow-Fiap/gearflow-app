@@ -15,6 +15,8 @@
     <ProjectReference Include="..\..\Catalog\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Customers\Customers.Application\Customers.Application.csproj" />
     <ProjectReference Include="..\..\Customers\Customers.Infrastructure\Customers.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Inventory\Inventory.Application\Inventory.Application.csproj" />
+    <ProjectReference Include="..\..\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
