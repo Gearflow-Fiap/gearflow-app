@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <UserSecretsId>gearflow-api</UserSecretsId>
+  </PropertyGroup>
+
+  <!--
+    Host único do monólito modular: referencia Application (endpoints usam ISender + commands) e
+    Infrastructure (composition root registra DbContext/repos/MediatR) de cada BC. À medida que os
+    BCs forem migrados, adicione aqui a ProjectReference do respectivo Application + Infrastructure.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.Infrastructure\Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Catalog\Catalog.Application\Catalog.Application.csproj" />
+    <ProjectReference Include="..\..\Catalog\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Scalar.AspNetCore" />
+  </ItemGroup>
+
+</Project>

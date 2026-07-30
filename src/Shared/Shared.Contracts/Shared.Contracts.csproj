@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Shared.Contracts — contratos de integration events entre BCs (sem lógica, sem dependências
+    além do MediatR.Contracts). No monólito modular o dispatch é in-process (INotification), mas os
+    contratos ficam aqui para manter as fronteiras explícitas e permitir extrair um BC no futuro.
+  -->
+  <ItemGroup>
+    <PackageReference Include="MediatR.Contracts" />
+  </ItemGroup>
+
+</Project>

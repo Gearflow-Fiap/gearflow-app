@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Configuração de cobertura de código (coverlet data collector — referenciado em todos os
+  projetos de teste via `coverlet.collector` no Directory.Packages.props).
+
+  Fonte única das EXCLUSÕES que tornam a meta de 100% honesta: código sem lógica testável
+  (composition roots, migrations EF, código gerado, Gateway/Contracts) fica fora do denominador.
+  Ver docs/development/TEST_COVERAGE.md.
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+
+          <!-- Assemblies fora do denominador -->
+          <Exclude>[*.Tests]*,[*Tests]*,[GearFlow.Gateway]*,[*.Contracts]*</Exclude>
+
+          <!-- Arquivos fora do denominador: DDL gerado, código gerado, bootstrap.
+               NÃO excluir DependencyInjection.cs — as fixtures de integração já os cobrem. -->
+          <ExcludeByFile>**/Migrations/*.cs,**/*.g.cs,**/*.Designer.cs,**/*.AssemblyInfo.cs,**/Program.cs</ExcludeByFile>
+
+          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage</ExcludeByAttribute>
+
+          <SkipAutoProps>true</SkipAutoProps>
+          <DeterministicReport>false</DeterministicReport>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
