@@ -31,6 +31,16 @@
     <Project Path="src/Workshop/Workshop.Application/Workshop.Application.csproj" />
     <Project Path="src/Workshop/Workshop.Infrastructure/Workshop.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Identity/">
+    <Project Path="src/Identity/Identity.Domain/Identity.Domain.csproj" />
+    <Project Path="src/Identity/Identity.Application/Identity.Application.csproj" />
+    <Project Path="src/Identity/Identity.Infrastructure/Identity.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Notifications/">
+    <Project Path="src/Notifications/Notifications.Domain/Notifications.Domain.csproj" />
+    <Project Path="src/Notifications/Notifications.Application/Notifications.Application.csproj" />
+    <Project Path="src/Notifications/Notifications.Infrastructure/Notifications.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/Architecture/">
     <Project Path="tests/Architecture/Architecture.Tests/Architecture.Tests.csproj" />
@@ -46,5 +56,8 @@
   </Folder>
   <Folder Name="/tests/Workshop/">
     <Project Path="tests/Workshop/Workshop.UnitTests/Workshop.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Identity/">
+    <Project Path="tests/Identity/Identity.UnitTests/Identity.UnitTests.csproj" />
   </Folder>
 </Solution>

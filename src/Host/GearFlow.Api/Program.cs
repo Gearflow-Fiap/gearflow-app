@@ -6,6 +6,10 @@ using Inventory.Infrastructure;
 using Inventory.Infrastructure.Persistence;
 using Workshop.Infrastructure;
 using Workshop.Infrastructure.Persistence;
+using Identity.Infrastructure;
+using Identity.Infrastructure.Persistence;
+using Notifications.Infrastructure;
+using Notifications.Infrastructure.Persistence;
 using GearFlow.Api;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -38,6 +42,8 @@ builder.Services.AddCatalogInfrastructure(builder.Configuration);
 builder.Services.AddCustomersInfrastructure(builder.Configuration);
 builder.Services.AddInventoryInfrastructure(builder.Configuration);
 builder.Services.AddWorkshopInfrastructure(builder.Configuration);
+builder.Services.AddIdentityInfrastructure(builder.Configuration);
+builder.Services.AddNotificationsInfrastructure(builder.Configuration);
 
 // OpenAPI / Scalar
 builder.Services.AddOpenApi();
@@ -52,6 +58,8 @@ if (!app.Environment.IsEnvironment("Testing"))
     await scope.ServiceProvider.GetRequiredService<CustomersDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<InventoryDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<WorkshopDbContext>().Database.MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<IdentityDbContext>().Database.MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<NotificationsDbContext>().Database.MigrateAsync();
 }
 
 app.UseExceptionHandling();

@@ -32,6 +32,16 @@ public static class BoundedContexts
             typeof(Workshop.Domain.Aggregates.ServiceOrderModel.ServiceOrder).Assembly,
             typeof(Workshop.Application.Abstractions.ICommand).Assembly,
             typeof(Workshop.Infrastructure.DependencyInjection).Assembly),
+        new BoundedContext(
+            "Identity",
+            typeof(Identity.Domain.Aggregates.User).Assembly,
+            typeof(Identity.Application.Abstractions.ICommand).Assembly,
+            typeof(Identity.Infrastructure.DependencyInjection).Assembly),
+        new BoundedContext(
+            "Notifications",
+            typeof(Notifications.Domain.Aggregates.Notification).Assembly,
+            typeof(Notifications.Application.Abstractions.INotificationRepository).Assembly,
+            typeof(Notifications.Infrastructure.DependencyInjection).Assembly),
     ];
 
     public static TheoryData<BoundedContext> AsTheoryData()
