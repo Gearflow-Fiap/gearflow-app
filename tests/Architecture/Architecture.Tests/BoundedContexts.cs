@@ -22,6 +22,11 @@ public static class BoundedContexts
             typeof(Customers.Domain.Aggregates.Client).Assembly,
             typeof(Customers.Application.Abstractions.ICommand).Assembly,
             typeof(Customers.Infrastructure.DependencyInjection).Assembly),
+        new BoundedContext(
+            "Inventory",
+            typeof(Inventory.Domain.Aggregates.Part).Assembly,
+            typeof(Inventory.Application.Abstractions.ICommand).Assembly,
+            typeof(Inventory.Infrastructure.DependencyInjection).Assembly),
     ];
 
     public static TheoryData<BoundedContext> AsTheoryData()

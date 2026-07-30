@@ -2,6 +2,8 @@ using Catalog.Infrastructure;
 using Catalog.Infrastructure.Persistence;
 using Customers.Infrastructure;
 using Customers.Infrastructure.Persistence;
+using Inventory.Infrastructure;
+using Inventory.Infrastructure.Persistence;
 using GearFlow.Api;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -32,6 +34,7 @@ builder.Services.AddCustomHealthChecks(connectionString, "GearFlow.Api");
 // Bounded Contexts (composition roots) — adicione cada BC migrado aqui
 builder.Services.AddCatalogInfrastructure(builder.Configuration);
 builder.Services.AddCustomersInfrastructure(builder.Configuration);
+builder.Services.AddInventoryInfrastructure(builder.Configuration);
 
 // OpenAPI / Scalar
 builder.Services.AddOpenApi();
@@ -44,6 +47,7 @@ if (!app.Environment.IsEnvironment("Testing"))
     using var scope = app.Services.CreateScope();
     await scope.ServiceProvider.GetRequiredService<CatalogDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<CustomersDbContext>().Database.MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<InventoryDbContext>().Database.MigrateAsync();
 }
 
 app.UseExceptionHandling();
