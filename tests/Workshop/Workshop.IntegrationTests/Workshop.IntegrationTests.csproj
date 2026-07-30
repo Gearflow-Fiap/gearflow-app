@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!--
+    Testa o fluxo de OS ponta a ponta contra um SQL Server real (Testcontainers): registra a
+    Infrastructure dos 6 BCs no MESMO banco e dirige o ciclo de vida via ISender. Exercita as portas
+    cross-BC (SqlInventoryReservation / SqlPricingReader) contra o banco de verdade.
+    EXIGE Docker — roda no job `integration` do CI e localmente com Docker Desktop.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Catalog\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Customers\Customers.Infrastructure\Customers.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Workshop\Workshop.Infrastructure\Workshop.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Identity\Identity.Infrastructure\Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Shared\Shared.Infrastructure\Shared.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Testcontainers.MsSql" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+</Project>

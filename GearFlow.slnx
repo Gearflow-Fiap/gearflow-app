@@ -59,6 +59,7 @@
   </Folder>
   <Folder Name="/tests/Workshop/">
     <Project Path="tests/Workshop/Workshop.UnitTests/Workshop.UnitTests.csproj" />
+    <Project Path="tests/Workshop/Workshop.IntegrationTests/Workshop.IntegrationTests.csproj" />
   </Folder>
   <Folder Name="/tests/Identity/">
     <Project Path="tests/Identity/Identity.UnitTests/Identity.UnitTests.csproj" />

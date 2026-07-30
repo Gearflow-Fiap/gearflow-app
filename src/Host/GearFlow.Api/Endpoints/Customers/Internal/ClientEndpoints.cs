@@ -1,4 +1,5 @@
 using Customers.Application.DTOs;
+using Customers.Application.UseCases.AddVehicle;
 using Customers.Application.UseCases.CreateClient;
 using Customers.Application.UseCases.GetClientById;
 using Customers.Application.UseCases.GetClients;
@@ -40,5 +41,18 @@ public sealed class ClientEndpoints : IEndpoint
             .Produces<ClientDto>()
             .ProducesValidationProblem()
             .RequireAuthorization();
+
+        group.MapPost("/{id:guid}/vehicles", async (Guid id, AddVehicleRequest body, ISender sender, CancellationToken ct) =>
+                (await sender.Send(new AddVehicleCommand(
+                    id, body.LicensePlate, body.Mark, body.Model, body.Color, body.YearFabrication, body.YearModel), ct)).ToOk())
+            .WithSummary("Adiciona um veículo ao cliente.")
+            .WithDescription("Cadastra um veículo sob o cliente; retorna o veículo criado.")
+            .Produces<VehicleDto>()
+            .Produces(StatusCodes.Status404NotFound)
+            .ProducesValidationProblem()
+            .RequireAuthorization();
     }
+
+    public sealed record AddVehicleRequest(
+        string LicensePlate, string Mark, string Model, string Color, int YearFabrication, int YearModel);
 }
