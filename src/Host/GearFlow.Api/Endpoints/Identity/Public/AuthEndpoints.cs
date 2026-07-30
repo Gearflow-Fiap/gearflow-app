@@ -2,6 +2,7 @@ using Identity.Application.DTOs;
 using Identity.Application.UseCases.LoginUser;
 using Identity.Application.UseCases.RefreshAccessToken;
 using Identity.Application.UseCases.RegisterUser;
+using Identity.Application.UseCases.RevokeToken;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -36,6 +37,12 @@ public sealed class AuthEndpoints : IEndpoint
             .WithSummary("Rotaciona o refresh token e emite um novo par.")
             .Produces<AuthTokenResponse>()
             .Produces(StatusCodes.Status401Unauthorized);
+
+        group.MapPost("/revoke-token", async (RefreshRequest body, HttpContext http, ISender sender, CancellationToken ct) =>
+                (await sender.Send(new RevokeTokenCommand(body.RefreshToken, ClientIp(http)), ct)).ToOk())
+            .WithSummary("Revoga um refresh token (logout).")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound);
     }
 
     private static string? ClientIp(HttpContext http) => http.Connection.RemoteIpAddress?.ToString();
