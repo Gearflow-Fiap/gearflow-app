@@ -31,6 +31,7 @@ public sealed class ConsumableEndpoints : IEndpoint
         group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new GetConsumableByIdQuery(id), ct)).ToOk())
             .WithSummary("Busca um insumo por id.")
+            .WithDescription("Retorna o insumo com quantidade disponível/reservada e flag de estoque mínimo; 404 se não existir.")
             .Produces<ConsumableDto>()
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();
@@ -38,6 +39,7 @@ public sealed class ConsumableEndpoints : IEndpoint
         group.MapPost("/", async (CreateConsumableCommand command, ISender sender, CancellationToken ct) =>
                 (await sender.Send(command, ct)).ToOk())
             .WithSummary("Cadastra um insumo.")
+            .WithDescription("Cria um insumo com nome, preço unitário (centavos) e quantidade inicial.")
             .Produces<ConsumableDto>()
             .ProducesValidationProblem()
             .RequireAuthorization();
@@ -45,6 +47,7 @@ public sealed class ConsumableEndpoints : IEndpoint
         group.MapPut("/{id:guid}", async (Guid id, UpdateConsumableRequest body, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new UpdateConsumableCommand(id, body.Name, body.UnitPriceCents, body.Quantity), ct)).ToOk())
             .WithSummary("Atualiza os dados de um insumo.")
+            .WithDescription("Altera nome, preço unitário e quantidade do insumo; 404 se não existir.")
             .Produces<ConsumableDto>()
             .Produces(StatusCodes.Status404NotFound)
             .ProducesValidationProblem()
@@ -53,6 +56,7 @@ public sealed class ConsumableEndpoints : IEndpoint
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new DeleteConsumableCommand(id), ct)).ToNoContent())
             .WithSummary("Remove um insumo.")
+            .WithDescription("Exclui o insumo do estoque; 404 se não existir.")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();

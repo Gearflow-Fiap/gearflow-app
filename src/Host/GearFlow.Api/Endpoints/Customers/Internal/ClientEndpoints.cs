@@ -34,6 +34,7 @@ public sealed class ClientEndpoints : IEndpoint
         group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new GetClientByIdQuery(id), ct)).ToOk())
             .WithSummary("Busca um cliente por id.")
+            .WithDescription("Retorna o cliente (CPF/CNPJ, contato, endereço) e seus veículos; 404 se não existir.")
             .Produces<ClientDto>()
             .Produces(StatusCodes.Status404NotFound);
 
@@ -47,6 +48,7 @@ public sealed class ClientEndpoints : IEndpoint
         group.MapPut("/{id:guid}", async (Guid id, UpdateClientRequest body, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new UpdateClientCommand(id, body.Name, body.Email, body.Phone, body.Address), ct)).ToOk())
             .WithSummary("Atualiza os dados de um cliente.")
+            .WithDescription("Altera nome, e-mail, telefone e endereço; valida o e-mail. 404 se não existir.")
             .Produces<ClientDto>()
             .Produces(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
@@ -54,6 +56,7 @@ public sealed class ClientEndpoints : IEndpoint
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new DeleteClientCommand(id), ct)).ToNoContent())
             .WithSummary("Remove um cliente (e seus veículos).")
+            .WithDescription("Exclui o cliente e, em cascata, seus veículos; 404 se não existir.")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound);
 
@@ -61,6 +64,7 @@ public sealed class ClientEndpoints : IEndpoint
         group.MapGet("/{id:guid}/vehicles", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new GetVehiclesByClientQuery(id), ct)).ToOk())
             .WithSummary("Lista os veículos de um cliente.")
+            .WithDescription("Retorna todos os veículos cadastrados sob o cliente; 404 se o cliente não existir.")
             .Produces<IReadOnlyList<VehicleDto>>()
             .Produces(StatusCodes.Status404NotFound);
 
@@ -68,6 +72,7 @@ public sealed class ClientEndpoints : IEndpoint
                 (await sender.Send(new AddVehicleCommand(
                     id, body.LicensePlate, body.Mark, body.Model, body.Color, body.YearFabrication, body.YearModel), ct)).ToOk())
             .WithSummary("Adiciona um veículo ao cliente.")
+            .WithDescription("Cadastra um veículo (placa, marca, modelo, cor, ano) sob o cliente e retorna o veículo criado.")
             .Produces<VehicleDto>()
             .Produces(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
@@ -75,6 +80,7 @@ public sealed class ClientEndpoints : IEndpoint
         group.MapGet("/vehicles/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new GetVehicleByIdQuery(id), ct)).ToOk())
             .WithSummary("Busca um veículo por id.")
+            .WithDescription("Retorna os dados de um veículo; 404 se não existir.")
             .Produces<VehicleDto>()
             .Produces(StatusCodes.Status404NotFound);
 
@@ -82,6 +88,7 @@ public sealed class ClientEndpoints : IEndpoint
                 (await sender.Send(new UpdateVehicleCommand(
                     id, body.LicensePlate, body.Mark, body.Model, body.Color, body.YearFabrication, body.YearModel), ct)).ToOk())
             .WithSummary("Atualiza um veículo.")
+            .WithDescription("Altera placa, marca, modelo, cor e anos de um veículo; 404 se não existir.")
             .Produces<VehicleDto>()
             .Produces(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
@@ -89,6 +96,7 @@ public sealed class ClientEndpoints : IEndpoint
         group.MapDelete("/vehicles/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new DeleteVehicleCommand(id), ct)).ToNoContent())
             .WithSummary("Remove um veículo.")
+            .WithDescription("Exclui um veículo do cliente; 404 se não existir.")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound);
     }

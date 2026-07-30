@@ -28,6 +28,12 @@
     <ProjectReference Include="..\..\..\src\Notifications\Notifications.Domain\Notifications.Domain.csproj" />
     <ProjectReference Include="..\..\..\src\Notifications\Notifications.Application\Notifications.Application.csproj" />
     <ProjectReference Include="..\..\..\src\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\Host\GearFlow.Api\GearFlow.Api.csproj" />
+  </ItemGroup>
+
+  <!-- Necessário para materializar os IEndpoint num WebApplication e inspecionar os metadados. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +42,7 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="NetArchTest.Rules" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 

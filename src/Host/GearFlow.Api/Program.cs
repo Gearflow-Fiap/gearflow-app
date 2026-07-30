@@ -92,3 +92,6 @@ namespace GearFlow.Api
     /// <summary>Marcador de assembly para descoberta de <see cref="IEndpoint"/> e testes de integração.</summary>
     public interface IApiMarker { }
 }
+
+/// <summary>Exposto para o <c>WebApplicationFactory&lt;Program&gt;</c> dos testes.</summary>
+public partial class Program { }

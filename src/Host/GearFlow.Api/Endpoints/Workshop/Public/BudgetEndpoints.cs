@@ -24,6 +24,7 @@ public sealed class BudgetEndpoints : IEndpoint
         group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new GetBudgetByIdQuery(id), ct)).ToOk())
             .WithSummary("Consulta um orçamento por id.")
+            .WithDescription("Retorna o orçamento com itens (serviços/peças/insumos), total e status de aprovação; 404 se não existir.")
             .Produces<BudgetDto>()
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();

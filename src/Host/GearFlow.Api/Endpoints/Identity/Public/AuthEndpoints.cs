@@ -22,6 +22,7 @@ public sealed class AuthEndpoints : IEndpoint
         group.MapPost("/register", async (RegisterUserCommand command, ISender sender, CancellationToken ct) =>
                 (await sender.Send(command, ct)).ToOk())
             .WithSummary("Registra um funcionário (staff).")
+            .WithDescription("Cria um usuário de staff (e-mail, nome e senha). Valida senha mínima e e-mail único.")
             .Produces<RegisterUserResponse>()
             .ProducesValidationProblem();
 
@@ -35,12 +36,14 @@ public sealed class AuthEndpoints : IEndpoint
         group.MapPost("/refresh-token", async (RefreshRequest body, HttpContext http, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new RefreshAccessTokenCommand(body.RefreshToken, ClientIp(http)), ct)).ToOk())
             .WithSummary("Rotaciona o refresh token e emite um novo par.")
+            .WithDescription("Recebe um refresh token válido, revoga-o e devolve um novo access token + refresh token.")
             .Produces<AuthTokenResponse>()
             .Produces(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/revoke-token", async (RefreshRequest body, HttpContext http, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new RevokeTokenCommand(body.RefreshToken, ClientIp(http)), ct)).ToOk())
             .WithSummary("Revoga um refresh token (logout).")
+            .WithDescription("Invalida o refresh token informado para encerrar a sessão; 404 se já estiver inválido/revogado.")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
     }

@@ -34,6 +34,7 @@ public sealed class JobEndpoints : IEndpoint
         group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new GetJobByIdQuery(id), ct)).ToOk())
             .WithSummary("Busca um serviço por id.")
+            .WithDescription("Retorna o serviço de mão de obra (nome, descrição e preço em centavos); 404 se não existir.")
             .Produces<JobDto>()
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();
@@ -49,6 +50,7 @@ public sealed class JobEndpoints : IEndpoint
         group.MapPut("/{id:guid}", async (Guid id, UpdateJobRequest body, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new UpdateJobCommand(id, body.Name, body.Description, body.PriceCents), ct)).ToOk())
             .WithSummary("Atualiza um serviço.")
+            .WithDescription("Altera nome, descrição e preço de um serviço existente; 404 se não existir.")
             .Produces<JobDto>()
             .Produces(StatusCodes.Status404NotFound)
             .ProducesValidationProblem()
@@ -57,6 +59,7 @@ public sealed class JobEndpoints : IEndpoint
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new DeleteJobCommand(id), ct)).ToNoContent())
             .WithSummary("Remove um serviço.")
+            .WithDescription("Exclui um serviço do catálogo; 404 se não existir.")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();

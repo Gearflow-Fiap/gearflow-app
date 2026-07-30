@@ -31,6 +31,7 @@ public sealed class PartEndpoints : IEndpoint
         group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new GetPartByIdQuery(id), ct)).ToOk())
             .WithSummary("Busca uma peça por id.")
+            .WithDescription("Retorna a peça com quantidade disponível/reservada e flag de estoque mínimo; 404 se não existir.")
             .Produces<PartDto>()
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();
@@ -38,6 +39,7 @@ public sealed class PartEndpoints : IEndpoint
         group.MapPost("/", async (CreatePartCommand command, ISender sender, CancellationToken ct) =>
                 (await sender.Send(command, ct)).ToOk())
             .WithSummary("Cadastra uma peça.")
+            .WithDescription("Cria uma peça com nome, número, fabricante, preço (centavos) e quantidade inicial.")
             .Produces<PartDto>()
             .ProducesValidationProblem()
             .RequireAuthorization();
@@ -46,6 +48,7 @@ public sealed class PartEndpoints : IEndpoint
                 (await sender.Send(new UpdatePartCommand(
                     id, body.Name, body.Description, body.PartNumber, body.Manufacturer, body.PriceCents, body.Quantity), ct)).ToOk())
             .WithSummary("Atualiza os dados de uma peça.")
+            .WithDescription("Altera nome, número, fabricante, preço e quantidade da peça; 404 se não existir.")
             .Produces<PartDto>()
             .Produces(StatusCodes.Status404NotFound)
             .ProducesValidationProblem()
@@ -54,6 +57,7 @@ public sealed class PartEndpoints : IEndpoint
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
                 (await sender.Send(new DeletePartCommand(id), ct)).ToNoContent())
             .WithSummary("Remove uma peça.")
+            .WithDescription("Exclui a peça do estoque; 404 se não existir.")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();

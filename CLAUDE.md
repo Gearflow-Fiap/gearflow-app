@@ -55,6 +55,8 @@ Domain: ZERO dependências externas (exceto MediatR.Contracts — desvio conscie
 - Handlers em `*.Application/UseCases/<Feature>/` e **`internal sealed`** — nunca public.
 - **Endpoint não injeta DbContext nem repositório** — sempre `ISender` + use case. O endpoint só
   traduz HTTP → command/query → HTTP (`ToOk()`/`ToProblem()`).
+- **Todo endpoint declara `.WithSummary(...)` e `.WithDescription(...)`** (documentação como contrato).
+  Travado por `EndpointDocumentationTests` (Architecture.Tests) — sem summary/description o CI quebra.
 
 ### Erro HTTP — ProblemDetails centralizado (RFC 9457)
 - **Nunca** montar `Results.BadRequest/NotFound` à mão. O endpoint faz `return result.ToOk();`.
