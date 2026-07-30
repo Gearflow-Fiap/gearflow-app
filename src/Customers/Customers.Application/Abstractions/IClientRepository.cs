@@ -8,5 +8,10 @@ public interface IClientRepository
     Task AddAsync(Client client, CancellationToken ct = default);
     Task<Client?> GetByIdAsync(ClientId id, CancellationToken ct = default);
     Task<IReadOnlyList<Client>> ListAsync(CancellationToken ct = default);
+    void Remove(Client client);
+
+    Task<Vehicle?> GetVehicleByIdAsync(VehicleId id, CancellationToken ct = default);
+    void RemoveVehicle(Vehicle vehicle);
+
     Task SaveChangesAsync(CancellationToken ct = default);
 }

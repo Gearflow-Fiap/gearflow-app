@@ -20,5 +20,12 @@ internal sealed class ClientRepository : IClientRepository
     public async Task<IReadOnlyList<Client>> ListAsync(CancellationToken ct = default) =>
         await _db.Clients.AsNoTracking().Include(c => c.Vehicles).OrderBy(c => c.Name).ToListAsync(ct);
 
+    public void Remove(Client client) => _db.Clients.Remove(client);
+
+    public async Task<Vehicle?> GetVehicleByIdAsync(VehicleId id, CancellationToken ct = default) =>
+        await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == id, ct);
+
+    public void RemoveVehicle(Vehicle vehicle) => _db.Vehicles.Remove(vehicle);
+
     public Task SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }
