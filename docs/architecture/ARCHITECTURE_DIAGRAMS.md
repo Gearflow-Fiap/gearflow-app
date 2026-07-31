@@ -135,8 +135,8 @@ sequenceDiagram
 ```
 
 O login de **staff** (funcionário) é separado: e-mail/senha no Identity BC, com `SecurityStamp` que
-invalida tokens ao trocar a senha. Ver [ADR-003](adr-001-modular-monolith-bounded-contexts.md)
-(planejado).
+invalida tokens ao trocar a senha. Ver [ADR-003](adr-003-authentication-strategy.md) e
+[RFC-003](../rfcs/rfc-003-estrategia-de-autenticacao.md).
 
 ---
 
@@ -176,8 +176,8 @@ sequenceDiagram
 
 Transições seguintes da OS (`Received → InDiagnostic → AwaitingApproval → InExecution → Finalized →
 Delivered`), aprovação de orçamento e o fluxo reserva/consumo de estoque estão descritos em
-[ADR-001](adr-001-modular-monolith-bounded-contexts.md) §4 e serão detalhados em ADR-002 (comunicação
-cross-BC).
+[ADR-001](adr-001-modular-monolith-bounded-contexts.md) §4 e detalhados em
+[ADR-002](adr-002-cross-bc-communication.md) (comunicação cross-BC).
 
 ---
 

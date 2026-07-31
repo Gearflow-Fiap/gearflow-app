@@ -114,7 +114,8 @@ oficina é tratado como escala de infra (réplicas/HPA), não isolamento de dado
 
 ### Mitigations
 - Testes de arquitetura (`NetArchTest`) barram violação de camada/BC no CI.
-- Contratos de integração isolados em `Shared.Contracts` para permitir extração futura.
+- Contratos de integração isolados em `Shared.Contracts` para permitir extração futura
+  (detalhado em [ADR-002](adr-002-cross-bc-communication.md)).
 
 ## Alternatives Considered
 
@@ -129,5 +130,7 @@ oficina é tratado como escala de infra (réplicas/HPA), não isolamento de dado
 
 - [RFC-001 — Escolha do banco de dados](../rfcs/rfc-001-escolha-do-banco-de-dados.md)
 - [ARCHITECTURE_DIAGRAMS.md](ARCHITECTURE_DIAGRAMS.md)
-- ADR-002 (planejado) — Padrão de comunicação cross-BC
-- ADR-003 (planejado) — Estratégia de autenticação (staff JWT + Lambda CPF)
+- [BOUNDED_CONTEXTS.md](BOUNDED_CONTEXTS.md) — revisão dos BCs + matriz de comunicação
+- [ADR-002](adr-002-cross-bc-communication.md) — Padrão de comunicação cross-BC
+- [ADR-003](adr-003-authentication-strategy.md) — Estratégia de autenticação (staff JWT + Lambda CPF)
+- [ADR-004](adr-004-kubernetes-scalability-hpa.md) — Escalabilidade no Kubernetes (HPA)

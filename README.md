@@ -8,9 +8,10 @@ de Clean Architecture em camadas para **Bounded Contexts** (monólito modular), 
 do `delivery-app-backend`.
 
 > **Documentação**: comece por [`docs/INDEX.md`](docs/INDEX.md). Arquitetura em
-> [ADR-001](docs/architecture/adr-001-modular-monolith-bounded-contexts.md); diagramas (componentes +
-> sequência) em [ARCHITECTURE_DIAGRAMS](docs/architecture/ARCHITECTURE_DIAGRAMS.md); escolha do banco
-> + ER em [RFC-001](docs/rfcs/rfc-001-escolha-do-banco-de-dados.md).
+> [ADR-001](docs/architecture/adr-001-modular-monolith-bounded-contexts.md); revisão dos BCs em
+> [BOUNDED_CONTEXTS](docs/architecture/BOUNDED_CONTEXTS.md); diagramas (componentes + sequência +
+> estados) em [ARCHITECTURE_DIAGRAMS](docs/architecture/ARCHITECTURE_DIAGRAMS.md). Veja a
+> [checklist de entrega da Fase 3](#arquitetura--documentação-fase-3) abaixo.
 
 ## Tecnologias
 
@@ -28,15 +29,35 @@ um único host (`GearFlow.Api`) expõe os endpoints; um Gateway fica à frente. 
 
 ```mermaid
 flowchart LR
-    U[Staff / Cliente] --> GW[API Gateway]
+    U[Staff] --> GW[API Gateway]
+    C[Cliente] -->|CPF| L[Lambda auth]
+    L -.JWT.-> GW
     GW --> API[GearFlow.Api<br/>BCs no mesmo processo]
     API --> DB[(SQL Server)]
     API -.-> OTEL[Prometheus / OTLP / Logs JSON]
 ```
 
-## Rodando localmente
+## Arquitetura & Documentação (Fase 3)
 
-> _Scaffold em progresso — os passos abaixo refletem o alvo._
+Os entregáveis arquiteturais da Fase 3 e onde cada um está documentado:
+
+| Entregável da Fase 3 | Documento |
+|---|---|
+| **Diagrama de componentes** (nuvem: APIs, banco, monitoramento) | [ARCHITECTURE_DIAGRAMS §1–2](docs/architecture/ARCHITECTURE_DIAGRAMS.md) · [RFC-002](docs/rfcs/rfc-002-nuvem-e-api-gateway.md) |
+| **Diagrama de sequência — autenticação** | [ARCHITECTURE_DIAGRAMS §3](docs/architecture/ARCHITECTURE_DIAGRAMS.md) |
+| **Diagrama de sequência — abertura de OS** | [ARCHITECTURE_DIAGRAMS §4](docs/architecture/ARCHITECTURE_DIAGRAMS.md) |
+| **RFC — escolha da nuvem + API Gateway** | [RFC-002](docs/rfcs/rfc-002-nuvem-e-api-gateway.md) |
+| **RFC — escolha do banco de dados** | [RFC-001](docs/rfcs/rfc-001-escolha-do-banco-de-dados.md) |
+| **RFC — estratégia de autenticação** | [RFC-003](docs/rfcs/rfc-003-estrategia-de-autenticacao.md) |
+| **ADR — padrão de comunicação** | [ADR-002](docs/architecture/adr-002-cross-bc-communication.md) |
+| **ADR — uso de HPA (escalabilidade K8s)** | [ADR-004](docs/architecture/adr-004-kubernetes-scalability-hpa.md) |
+| **Justificativa do banco + ER + relacionamentos** | [RFC-001](docs/rfcs/rfc-001-escolha-do-banco-de-dados.md) |
+| **Revisão dos Bounded Contexts + como conversam** | [BOUNDED_CONTEXTS](docs/architecture/BOUNDED_CONTEXTS.md) · [ADR-002](docs/architecture/adr-002-cross-bc-communication.md) |
+| **Observabilidade / monitoramento** | [OBSERVABILITY](docs/architecture/OBSERVABILITY.md) |
+
+Índice completo: [`docs/INDEX.md`](docs/INDEX.md).
+
+## Rodando localmente
 
 ```bash
 docker compose up -d            # GearFlow.Api + SQL Server + Mailpit
@@ -44,7 +65,11 @@ dotnet build GearFlow.slnx -c Release
 dotnet test GearFlow.slnx       # suíte completa (integração exige Docker)
 ```
 
-Portas (alvo):
+Em Development, o startup aplica as migrations, semeia o staff (`admin@gearflow.local` / `Admin@123`)
+e uma **massa de dados fictícios** (`DevDataSeeder`: serviços, estoque, clientes/veículos e OS em
+vários estados). Scalar em `http://localhost:8080/scalar/v1`.
+
+Portas:
 
 | Serviço | Porta |
 |---|---|
@@ -65,6 +90,9 @@ Portas (alvo):
 
 ## Status da refatoração
 
-Ver o plano de fases em `docs/` e o [ADR-001](docs/architecture/adr-001-modular-monolith-bounded-contexts.md).
-O kernel `Shared` (Domain/Infrastructure/Contracts) e a documentação base já estão no lugar; a
-migração dos Bounded Contexts segue por fases preservando as regras de negócio do GearFlow original.
+Os **seis Bounded Contexts** (Identity, Customers, Catalog, Inventory, Workshop, Notifications) estão
+migrados, com paridade funcional ao GearFlow original (máquina de estados da OS, estoque bifásico,
+validação de CPF/CNPJ, autenticação de staff, notificações). Testes de domínio e de arquitetura
+rodam no CI. A documentação arquitetural da Fase 3 está completa — ver a
+[checklist acima](#arquitetura--documentação-fase-3). Um frontend simples de teste vive no repo irmão
+`gearflow-frontend`.
