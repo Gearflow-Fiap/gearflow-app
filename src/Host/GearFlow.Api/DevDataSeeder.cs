@@ -122,7 +122,9 @@ public static class DevDataSeeder
         await customers.SaveChangesAsync(ct);
 
         // ---------- Ordens de serviço (estados variados) ----------
-        var sys = Actor.System;
+        // Instância NOVA de Actor por uso: o singleton Actor.System não pode ser owned por
+        // vários donos no mesmo SaveChanges (o EF gravaria actor_type NULL nas repetidas).
+        Actor Sys() => Actor.From(ActorType.System, null);
         var vehicles = clients.SelectMany(c => c.Vehicles).ToList();
 
         // Helper: cria uma OS (create + peças/serviços) em memória.
@@ -130,7 +132,7 @@ public static class DevDataSeeder
         {
             var soJobs = jobIds.Select(j => new ServiceOrderJob(j, createdAt));
             var soParts = partsReq.Select(p => new ServiceOrderPart(p.partId, p.qty, createdAt));
-            return ServiceOrder.Create(vehicleId, sys, soJobs, soParts, createdAt);
+            return ServiceOrder.Create(vehicleId, Sys(), soJobs, soParts, createdAt);
         }
 
         // 2 recebidas
@@ -139,12 +141,12 @@ public static class DevDataSeeder
 
         // 1 em diagnóstico
         var os3 = NewOrder(vehicles[3].Id.Value, [jobs[3].Id.Value], [(parts[1].Id.Value, 1)], now.AddHours(-5));
-        os3.StartDiagnostic(sys, now.AddHours(-5).AddMinutes(10));
+        os3.StartDiagnostic(Sys(),now.AddHours(-5).AddMinutes(10));
 
         // 1 aguardando aprovação (com orçamento)
         var os4 = NewOrder(vehicles[4].Id.Value, [jobs[1].Id.Value, jobs[8].Id.Value], [(parts[4].Id.Value, 2)], now.AddHours(-8));
-        os4.StartDiagnostic(sys, now.AddHours(-8).AddMinutes(15));
-        os4.FinalizeDiagnostic(sys, now.AddHours(-8).AddMinutes(40));
+        os4.StartDiagnostic(Sys(),now.AddHours(-8).AddMinutes(15));
+        os4.FinalizeDiagnostic(Sys(),now.AddHours(-8).AddMinutes(40));
         var budget4 = Budget.Create(os4.Id,
             [new BudgetJob(jobs[1].Id.Value, jobs[1].PriceCents, now), new BudgetJob(jobs[8].Id.Value, jobs[8].PriceCents, now)],
             [new BudgetPart(parts[4].Id.Value, parts[4].PriceCents, 2, now)],
@@ -153,17 +155,23 @@ public static class DevDataSeeder
         // 1 entregue (ciclo completo, com marcos de tempo para o dashboard)
         var t0 = now.AddDays(-1);
         var os5 = NewOrder(vehicles[1].Id.Value, [jobs[0].Id.Value], [(parts[0].Id.Value, 1)], t0);
-        os5.StartDiagnostic(sys, t0.AddMinutes(5));
-        os5.FinalizeDiagnostic(sys, t0.AddMinutes(25));
-        os5.StartExecution(sys, t0.AddMinutes(30));
-        os5.Finalize(sys, t0.AddMinutes(95));
-        os5.Deliver(sys, t0.AddMinutes(110));
+        os5.StartDiagnostic(Sys(),t0.AddMinutes(5));
+        os5.FinalizeDiagnostic(Sys(),t0.AddMinutes(25));
+        os5.StartExecution(Sys(),t0.AddMinutes(30));
+        os5.Finalize(Sys(),t0.AddMinutes(95));
+        os5.Deliver(Sys(),t0.AddMinutes(110));
         var budget5 = Budget.Create(os5.Id,
             [new BudgetJob(jobs[0].Id.Value, jobs[0].PriceCents, t0)],
             [new BudgetPart(parts[0].Id.Value, parts[0].PriceCents, 1, t0)],
             [], t0.AddMinutes(25));
 
-        workshop.ServiceOrders.AddRange(os1, os2, os3, os4, os5);
+        // Salva uma OS por vez (espelha o create real — evita compartilhar owned Actors entre agregados).
+        foreach (var os in new[] { os1, os2, os3, os4, os5 })
+        {
+            workshop.ServiceOrders.Add(os);
+            await workshop.SaveChangesAsync(ct);
+        }
+
         workshop.Budgets.AddRange(budget4, budget5);
         await workshop.SaveChangesAsync(ct);
     }
