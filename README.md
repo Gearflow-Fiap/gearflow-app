@@ -91,11 +91,14 @@ Portas:
 | 3 | `gearflow-infra-db` | Terraform do banco gerenciado (SQL Server) |
 | 4 | `gearflow-app` (**este**) | Aplicação .NET no Kubernetes |
 
+> **Companion** (não é um dos 4 entregáveis): [`gearflow-frontend`](https://github.com/Gearflow-Fiap/gearflow-frontend)
+> — SPA (Vite + React + Orval) que consome a API para testar o backend ponta a ponta.
+
 ## Status da refatoração
 
 Os **seis Bounded Contexts** (Identity, Customers, Catalog, Inventory, Workshop, Notifications) estão
 migrados, com paridade funcional ao GearFlow original (máquina de estados da OS, estoque bifásico,
 validação de CPF/CNPJ, autenticação de staff, notificações). Testes de domínio e de arquitetura
 rodam no CI. A documentação arquitetural da Fase 3 está completa — ver a
-[checklist acima](#arquitetura--documentação-fase-3). Um frontend simples de teste vive no repo irmão
-`gearflow-frontend`.
+[checklist acima](#arquitetura--documentação-fase-3). Um frontend simples de teste (SPA que consome a
+API) vive no repo companion [`gearflow-frontend`](https://github.com/Gearflow-Fiap/gearflow-frontend).

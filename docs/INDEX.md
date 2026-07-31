@@ -102,3 +102,6 @@ Este é o repo da **aplicação principal**. Os demais (planejados/scaffold) e s
 | 2 | `gearflow-infra-k8s` | Terraform do cluster Kubernetes (HPA, observabilidade) |
 | 3 | `gearflow-infra-db` | Terraform do banco gerenciado (SQL Server) |
 | 4 | `gearflow-app` (**este**) | Aplicação .NET rodando no Kubernetes |
+
+> **Companion** (fora dos 4 entregáveis): [`gearflow-frontend`](https://github.com/Gearflow-Fiap/gearflow-frontend)
+> — SPA (Vite + React + Orval) que consome a API para testar o backend.
