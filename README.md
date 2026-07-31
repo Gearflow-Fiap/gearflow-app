@@ -29,13 +29,17 @@ um único host (`GearFlow.Api`) expõe os endpoints; um Gateway fica à frente. 
 
 ```mermaid
 flowchart LR
-    U[Staff] --> GW[API Gateway]
+    U[Staff] --> GW[YARP<br/>API Gateway]
     C[Cliente] -->|CPF| L[Lambda auth]
     L -.JWT.-> GW
-    GW --> API[GearFlow.Api<br/>BCs no mesmo processo]
+    GW --> API[GearFlow.Api<br/>BCs no mesmo processo<br/>valida o JWT]
     API --> DB[(SQL Server)]
     API -.-> OTEL[Prometheus / OTLP / Logs JSON]
 ```
+
+> **API Gateway = YARP** (`src/Gateway`), dentro do cluster: roteamento `/api/*`, CORS e rate
+> limiting. Na nuvem, o ALB/Ingress faz só TLS/entrada de rede — **não** é o API Gateway. Detalhe e
+> justificativa em [RFC-002](docs/rfcs/rfc-002-nuvem-e-api-gateway.md).
 
 ## Arquitetura & Documentação (Fase 3)
 

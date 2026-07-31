@@ -15,8 +15,9 @@ flowchart TB
         CustomerApp["Cliente (CPF)"]
     end
 
-    subgraph Cloud["Nuvem (Kubernetes)"]
-        APIGW["API Gateway<br/>(YARP / AWS API Gateway)<br/>CORS + rate limiting"]
+    subgraph Cloud["Nuvem (AWS)"]
+        ALB["ALB / Ingress<br/>(TLS — só entrada de rede,<br/>NÃO é o API Gateway)"]
+        APIGW["API Gateway = YARP<br/>(no cluster)<br/>roteia /api/* + CORS + rate limit"]
 
         subgraph Lambda["Serverless"]
             AuthFn["Auth Function (Lambda)<br/>valida CPF → JWT"]
@@ -36,11 +37,12 @@ flowchart TB
         Logs["Logs JSON estruturados"]
     end
 
-    Browser -->|HTTPS| APIGW
+    Browser -->|HTTPS| ALB
+    ALB --> APIGW
     CustomerApp -->|CPF| AuthFn
     AuthFn -->|consulta cliente| DB
     AuthFn -->|JWT| CustomerApp
-    CustomerApp -->|Bearer JWT| APIGW
+    CustomerApp -->|Bearer JWT| ALB
     APIGW -->|/api/**| App
     App --> DB
     App --> SMTP
@@ -50,8 +52,12 @@ flowchart TB
 ```
 
 **Notas**
-- O **API Gateway** é a entrada única; CORS e rate limiting vivem só nele.
-- A **Lambda** autentica clientes por CPF (Fase 3) e assina o JWT com o **mesmo** segredo/issuer/
+- **API Gateway ≠ Load Balancer.** O **ALB/Ingress** só faz TLS e entrada de rede no cluster; o
+  **API Gateway é o YARP** (`src/Gateway`), a entrada única de aplicação — CORS, rate limiting e
+  roteamento `/api/*` vivem só nele. Não há AWS API Gateway na topologia (decisão em
+  [RFC-002](../rfcs/rfc-002-nuvem-e-api-gateway.md)).
+- A **validação do JWT** é feita na **aplicação** (`GearFlow.Api`), por rota; o YARP roteia. A
+  **Lambda** autentica clientes por CPF (Fase 3) e assina o JWT com o **mesmo** segredo/issuer/
   audience que o `GearFlow.Api` valida — por isso a app confia no token sem chamar a Lambda.
 - O `GearFlow.Api` é um **monólito modular**: todos os BCs no mesmo processo, fronteiras no código
   (ver [ADR-001](adr-001-modular-monolith-bounded-contexts.md)).

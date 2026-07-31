@@ -23,6 +23,7 @@ os padrões do `delivery-app-backend`. Ver [ADR-001](architecture/adr-001-modula
 | Entender a escolha do banco + modelo ER | [RFC-001 — Escolha do banco de dados](rfcs/rfc-001-escolha-do-banco-de-dados.md) |
 | Entender nuvem + gateway | [RFC-002 — Nuvem e API Gateway](rfcs/rfc-002-nuvem-e-api-gateway.md) |
 | Entender a estratégia de autenticação | [RFC-003](rfcs/rfc-003-estrategia-de-autenticacao.md) · [ADR-003](architecture/adr-003-authentication-strategy.md) |
+| Ler o enunciado oficial da Fase 3 | [tech-challenge/13SOAT-Fase-3-Tech-Challenge.pdf](tech-challenge/13SOAT-Fase-3-Tech-Challenge.pdf) |
 | Rodar/testar localmente | [`../README.md`](../README.md) |
 | Ver todos os endpoints (paridade com o legado) | [development/API_ENDPOINTS.md](development/API_ENDPOINTS.md) |
 | Entender observabilidade (Fase 3) | [OBSERVABILITY.md](architecture/OBSERVABILITY.md) |
@@ -49,7 +50,7 @@ Discussão de decisões técnicas relevantes (escolha de nuvem, banco, auth). Fo
 | RFC | Título | Status |
 |---|---|---|
 | [RFC-001](rfcs/rfc-001-escolha-do-banco-de-dados.md) | Escolha do banco de dados (SQL Server gerenciado) + modelo ER | Draft |
-| [RFC-002](rfcs/rfc-002-nuvem-e-api-gateway.md) | Escolha da nuvem, implantação e API Gateway | Draft |
+| [RFC-002](rfcs/rfc-002-nuvem-e-api-gateway.md) | Escolha da nuvem, implantação e API Gateway (YARP) | Accepted |
 | [RFC-003](rfcs/rfc-003-estrategia-de-autenticacao.md) | Estratégia de autenticação (staff JWT + CPF serverless) | Draft |
 
 ---
