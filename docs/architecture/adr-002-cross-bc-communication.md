@@ -21,7 +21,7 @@ estoque, estoque mínimo).
 
 ## Decision
 
-### 1. Leitura/ação síncrona cross-BC → porta de Application + SQL cru (padrão ADR-011)
+### 1. Leitura/ação síncrona cross-BC → porta de Application + SQL cru
 
 Quando um BC precisa **ler** ou **agir** sobre dado de outro de forma síncrona, ele declara uma
 **porta** (interface) na sua própria `Application/Abstractions/`; a implementação vive na sua
@@ -34,7 +34,7 @@ Quando um BC precisa **ler** ou **agir** sobre dado de outro de forma síncrona,
 | `ICustomerContactReader` | `SqlCustomerContactReader` | `customers.vehicles` → `customers.clients` (contato p/ e-mail) |
 
 **Why**: o BC dono continua dono das suas tabelas; o consumidor depende de uma abstração pequena e
-testável. É o mesmo padrão de leitura cross-BC do `delivery-app` (ADR-011), estendido a uma escrita
+testável. É o padrão de leitura cross-BC (porta de Application + SQL cru), estendido a uma escrita
 controlada (reserva/consumo de estoque) que é a única ação cross-BC transacional.
 
 ### 2. Reação assíncrona cross-BC → evento de integração in-process (MediatR)
@@ -80,8 +80,8 @@ arquitetura (`LayeringTests`).
 - Efeitos críticos e transacionais (reserva/consumo) são **síncronos via porta**, na mesma requisição
   — não dependem de evento. Os eventos cobrem só reações não-críticas (avisos, auto-resume, que também
   pode ser disparado manualmente pelo endpoint de retomar execução).
-- Ao extrair um BC, o outbox/broker entra no lugar do dispatch in-process (padrão já conhecido do
-  `delivery-app`).
+- Ao extrair um BC, o outbox/broker entra no lugar do dispatch in-process (padrão consolidado de
+  mensageria assíncrona).
 
 ## Alternatives Considered
 

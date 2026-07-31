@@ -7,7 +7,7 @@ public sealed record ConsumablePrice(Guid ConsumableId, int UnitPriceCents);
 
 /// <summary>
 /// Lê os preços atuais de serviços/peças/insumos para o orçamento fazer o snapshot. Implementada na
-/// Infrastructure via SQL cru contra catalog.jobs / inventory.parts / inventory.consumables (ADR-011).
+/// Infrastructure via SQL cru contra catalog.jobs / inventory.parts / inventory.consumables (ADR-002).
 /// </summary>
 public interface IPricingReader
 {

@@ -4,7 +4,7 @@ using Workshop.Application.Abstractions;
 namespace Workshop.Infrastructure.CrossBc;
 
 /// <summary>
-/// Lê preços atuais dos BCs Catalog/Inventory via SQL cru (ADR-011: leitura cross-BC no mesmo banco,
+/// Lê preços atuais dos BCs Catalog/Inventory via SQL cru (ADR-002: leitura cross-BC no mesmo banco,
 /// sem referência de projeto). Preços autoritativos para o snapshot do orçamento.
 /// </summary>
 internal sealed class SqlPricingReader : IPricingReader

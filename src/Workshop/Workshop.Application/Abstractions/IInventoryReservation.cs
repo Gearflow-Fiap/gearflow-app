@@ -18,7 +18,7 @@ public sealed record ReservationResult(
 /// <summary>
 /// Porta do Workshop para o estoque (Inventory) — preserva a regra do GearFlow de reservar na
 /// aprovação do orçamento e consumir na finalização, sem que o Workshop referencie o Inventory.
-/// Implementada na Infrastructure via SQL cru contra as tabelas do Inventory (ADR-011).
+/// Implementada na Infrastructure via SQL cru contra as tabelas do Inventory (ADR-002).
 /// </summary>
 public interface IInventoryReservation
 {

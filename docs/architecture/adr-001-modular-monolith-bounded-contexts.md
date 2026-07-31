@@ -28,7 +28,7 @@ Restrições que moldam a decisão:
   proporcional.
 - Precisamos de **fronteiras explícitas** entre capacidades para poder testá-las isoladamente e,
   se necessário, extrair uma delas para um serviço próprio no futuro.
-- Adotar os padrões maduros do `delivery-app-backend` (kernel `Shared`, CQRS com MediatR,
+- Adotar padrões maduros e consolidados (kernel `Shared`, CQRS com MediatR,
   `Result<T>`→ProblemDetails, testes de arquitetura como gate de CI).
 
 ## Decision
@@ -106,7 +106,7 @@ oficina é tratado como escala de infra (réplicas/HPA), não isolamento de dado
 - Fronteiras de BC explícitas e testáveis; cada capacidade evolui isolada.
 - Uma unidade de deploy simples de operar no Kubernetes.
 - Regras de negócio preservadas, agora desacopladas via portas/eventos.
-- Kernel e convenções maduros herdados do `delivery-app-backend` (menos decisão do zero).
+- Kernel e convenções maduros já consolidados (menos decisão do zero).
 
 ### Negative
 - Um monólito ainda compartilha processo e banco: uma migração descuidada pode reacoplar BCs.
@@ -119,7 +119,7 @@ oficina é tratado como escala de infra (réplicas/HPA), não isolamento de dado
 
 ## Alternatives Considered
 
-1. **Microserviços por BC (um Api por BC + YARP)** — máxima fidelidade ao `delivery-app`, mas 6+
+1. **Microserviços por BC (um Api por BC + YARP)** — isolamento máximo por BC, mas 6+
    serviços para deployar, observar e versionar. Custo desproporcional ao escopo do desafio.
 2. **Manter a Clean Architecture em camadas atual** — não resolve o entrelaçamento dos domain
    services nem cria fronteiras de capacidade; contraria o objetivo da refatoração.

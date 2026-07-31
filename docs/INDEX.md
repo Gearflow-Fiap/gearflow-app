@@ -8,8 +8,8 @@ serviços, estoque de peças e insumos, e o ciclo de vida da **Ordem de Serviço
 recebimento à entrega, passando por diagnóstico, orçamento e execução.
 
 Este repositório é a **aplicação principal** (repo #4 da Fase 3), reestruturada de uma Clean
-Architecture em camadas para uma organização por **Bounded Contexts** (monólito modular), espelhando
-os padrões do `delivery-app-backend`. Ver [ADR-001](architecture/adr-001-modular-monolith-bounded-contexts.md).
+Architecture em camadas para uma organização por **Bounded Contexts** (monólito modular).
+Ver [ADR-001](architecture/adr-001-modular-monolith-bounded-contexts.md).
 
 ---
 

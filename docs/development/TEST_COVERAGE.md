@@ -1,7 +1,7 @@
 # Cobertura de testes — GearFlow
 
-Herdado do `delivery-app-backend`: cobertura consolidada com **coverlet** + **ReportGenerator**, com
-um **gate ratchet** no CI (o piso sobe a cada merge em `main`, nunca desce).
+Cobertura consolidada com **coverlet** + **ReportGenerator**, com um **gate ratchet** no CI (o piso
+sobe a cada merge em `main`, nunca desce).
 
 ## Como funciona
 

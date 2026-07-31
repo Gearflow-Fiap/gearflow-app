@@ -5,7 +5,7 @@ using Workshop.Application.Abstractions;
 namespace Workshop.Infrastructure.CrossBc;
 
 /// <summary>
-/// Reserva/consome estoque nas tabelas do Inventory via SQL cru transacional (ADR-011). Preserva a
+/// Reserva/consome estoque nas tabelas do Inventory via SQL cru transacional (ADR-002). Preserva a
 /// regra bifásica: <c>Reserve</c> move disponível→reservado (com guard de disponibilidade); se algum
 /// item não tiver saldo, faz rollback e devolve Insufficient (reserva atômica). <c>Consume</c> baixa
 /// a reserva. Espelha os métodos <c>Reserve</c>/<c>Consume</c> dos agregados Part/Consumable.

@@ -220,7 +220,7 @@ flowchart LR
 | `PartsReplenishedIntegrationEvent` | Reposição de estoque | Workshop | Reavalia OS aguardando peças (auto-resume) |
 
 O e-mail do cliente é resolvido por leitura cross-BC (`ICustomerContactReader`, SQL cru contra
-`customers.*` — ADR-011).
+`customers.*` — ver [ADR-002](adr-002-cross-bc-communication.md)).
 
 ## 6. Estados da Ordem de Serviço
 

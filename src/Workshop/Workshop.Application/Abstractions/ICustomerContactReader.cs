@@ -4,7 +4,7 @@ public sealed record CustomerContact(string Name, string Email);
 
 /// <summary>
 /// Lê o contato do cliente dono de um veículo (para o e-mail do orçamento). Implementada na
-/// Infrastructure via SQL cru contra customers.vehicles/customers.clients (ADR-011).
+/// Infrastructure via SQL cru contra customers.vehicles/customers.clients (ADR-002).
 /// </summary>
 public interface ICustomerContactReader
 {

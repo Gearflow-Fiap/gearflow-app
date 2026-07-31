@@ -5,7 +5,7 @@ namespace Workshop.Infrastructure.CrossBc;
 
 /// <summary>
 /// Resolve nome/e-mail do cliente a partir do veículo, via SQL cru contra o schema do Customers
-/// (ADR-011: leitura cross-BC no mesmo banco, sem referência de projeto).
+/// (ADR-002: leitura cross-BC no mesmo banco, sem referência de projeto).
 /// </summary>
 internal sealed class SqlCustomerContactReader : ICustomerContactReader
 {

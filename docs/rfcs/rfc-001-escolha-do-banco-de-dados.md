@@ -193,7 +193,7 @@ erDiagram
 
 | Alternativa | Prós | Contras / por que não |
 |---|---|---|
-| **PostgreSQL gerenciado** | Alinha com o `delivery-app`; kernel Npgsql pronto; RDS barato | Exige portar 14 migrations, o `FOR JSON PATH` e revalidar todo o acesso a dados — risco alto sem ganho no escopo |
+| **PostgreSQL gerenciado** | Kernel Npgsql maduro; RDS barato | Exige portar as 14 migrations, o `FOR JSON PATH` e revalidar todo o acesso a dados — risco alto sem ganho no escopo |
 | **MySQL gerenciado** | Amplo suporte gerenciado | Mesmo custo de migração; sem vantagem sobre manter SQL Server |
 | **Manter SQL Server auto-hospedado (container)** | Zero mudança | Não atende ao requisito de **banco gerenciado** da Fase 3 |
 

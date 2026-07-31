@@ -4,8 +4,7 @@ Plataforma de gestão de **oficina mecânica**: clientes/veículos, catálogo de
 peças/insumos e o ciclo de vida da **Ordem de Serviço** — do recebimento à entrega.
 
 Este é o repositório da **aplicação principal** (repo #4 da Fase 3 do Tech Challenge), reorganizado
-de Clean Architecture em camadas para **Bounded Contexts** (monólito modular), espelhando os padrões
-do `delivery-app-backend`.
+de Clean Architecture em camadas para **Bounded Contexts** (monólito modular).
 
 > **Documentação**: comece por [`docs/INDEX.md`](docs/INDEX.md). Arquitetura em
 > [ADR-001](docs/architecture/adr-001-modular-monolith-bounded-contexts.md); revisão dos BCs em

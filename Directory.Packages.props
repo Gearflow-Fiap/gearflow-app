@@ -5,9 +5,9 @@
     projetos. Os .csproj usam <PackageReference Include="..."/> SEM Version — a versão vem do
     <PackageVersion> correspondente abaixo. Elimina drift de versão.
 
-    Herdado do delivery-app-backend e adaptado para o GearFlow:
-      - Banco: SQL Server (não PostgreSQL) — provider EF SqlServer + Microsoft.Data.SqlClient + Dapper.
-      - Sem multi-tenancy, MassTransit/RabbitMQ, Stripe, S3, Redis (ver ADR-001 / "copiar vs pular").
+    Stack do GearFlow:
+      - Banco: SQL Server — provider EF SqlServer + Microsoft.Data.SqlClient + Dapper.
+      - Sem multi-tenancy, MassTransit/RabbitMQ, Stripe, S3, Redis (ver ADR-001).
   -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>

@@ -3,7 +3,7 @@
   <!--
     Shared.Domain — primitivas puras de domínio (Entity, AggregateRoot, ValueObject, Result,
     IDomainEvent, Actor). ZERO dependências externas exceto MediatR (IDomainEvent : INotification,
-    desvio consciente herdado do delivery-app: dispatch de eventos sem wrapper próprio).
+    desvio consciente: dispatch de eventos sem wrapper próprio).
   -->
   <ItemGroup>
     <PackageReference Include="MediatR.Contracts" />

@@ -3,8 +3,7 @@
   <!--
     Shared.Infrastructure — toolkit cross-cutting (EF-free de propósito, para o Gateway poder
     referenciar): ProblemDetails/ResultExtensions, IEndpoint, JWT, observabilidade, Serilog,
-    exception middleware, health checks. Herdado do delivery-app e adaptado (sem multi-tenancy,
-    SQL Server no lugar de Npgsql).
+    exception middleware, health checks. Sem multi-tenancy; SQL Server (Microsoft.Data.SqlClient).
   -->
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

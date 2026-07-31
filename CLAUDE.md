@@ -10,7 +10,7 @@ peças/insumos e o ciclo de vida da **Ordem de Serviço (OS)**. Stack: **ASP.NET
 **SQL Server**, EF Core 10, MediatR (CQRS), xUnit.
 
 Este é o repo da **aplicação principal** (repo #4 da Fase 3), reorganizado de Clean Architecture em
-camadas para **Bounded Contexts** (monólito modular). Padrões herdados do `delivery-app-backend`.
+camadas para **Bounded Contexts** (monólito modular).
 Comece por [`docs/INDEX.md`](docs/INDEX.md) e [ADR-001](docs/architecture/adr-001-modular-monolith-bounded-contexts.md).
 
 ## Layout do repositório
