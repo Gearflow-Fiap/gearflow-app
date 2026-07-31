@@ -74,8 +74,10 @@ staff exigem JWT; os marcados **(público)** são anônimos.
 | Método | Rota | Descrição |
 |---|---|---|
 | GET | `/api/workshop/budgets/{id}` | Orçamento por id |
-| PUT | `/api/workshop/budgets/{id}/approve` (público) | Cliente aprova (por orçamento) |
-| PUT | `/api/workshop/budgets/{id}/reject` (público) | Cliente rejeita (por orçamento) |
+| GET | `/api/workshop/budgets/{id}/approve` (público) | Aprova via **link do e-mail** → página HTML de confirmação |
+| GET | `/api/workshop/budgets/{id}/reject` (público) | Rejeita via **link do e-mail** → página HTML de confirmação |
+| PUT | `/api/workshop/budgets/{id}/approve` (público) | Cliente aprova (por orçamento) — para o app/API |
+| PUT | `/api/workshop/budgets/{id}/reject` (público) | Cliente rejeita (por orçamento) — para o app/API |
 
 ## Externals (`ExternalsController` legado)
 
@@ -87,8 +89,9 @@ staff exigem JWT; os marcados **(público)** são anônimos.
 
 - **Aprovar/rejeitar orçamento** existe em duas formas: por **OS** (staff, em `service-orders`) e por
   **orçamento** (cliente/público, em `budgets`) — o legado só tinha a segunda.
-- As **páginas HTML** de aprovação por link (`GET budgets/{id}/approve|reject`) do legado não foram
-  portadas — a ação virou o `PUT` público acima (o front do canal do cliente renderiza a confirmação).
+- As **páginas HTML** de aprovação por link (`GET budgets/{id}/approve|reject`) do legado foram
+  portadas (executam a ação e devolvem uma página de confirmação) **e** também há os `PUT`
+  equivalentes para consumo por app/API.
 - A validação de posse `clientId`↔OS no endpoint público de Externals é um **TODO** documentado
   (join cross-BC OS→veículo→cliente).
 - **CPF do cliente**: a autenticação por CPF (Fase 3) fica na Lambda (`gearflow-auth-lambda`), fora
