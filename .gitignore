@@ -13,6 +13,10 @@ coverage/
 *.coverage
 *.cobertura.xml
 
+## Logs (runtime, gerados pelo Serilog)
+logs/
+*.log
+
 ## Rider / VS Code
 .idea/
 .vscode/
