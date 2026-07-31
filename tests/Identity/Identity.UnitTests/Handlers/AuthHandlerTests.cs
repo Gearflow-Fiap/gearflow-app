@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Identity.Application.Abstractions;
 using Identity.Application.UseCases.LoginUser;
+using Identity.Application.UseCases.RefreshAccessToken;
 using Identity.Application.UseCases.RegisterUser;
 using Identity.Application.UseCases.RevokeToken;
 using Identity.Domain.Aggregates;
@@ -113,5 +114,75 @@ public sealed class AuthHandlerTests
 
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("User.InvalidRefreshToken");
+    }
+
+    private static (User user, RefreshToken token) StaffWithActiveRefresh()
+    {
+        var user = AStaff();
+        var token = user.IssueRefreshToken("old-hash", Now.AddDays(7), "127.0.0.1", Now);
+        return (user, token);
+    }
+
+    [Fact]
+    public async Task Refresh_with_active_token_rotates_and_returns_new_tokens()
+    {
+        var (user, oldToken) = StaffWithActiveRefresh();
+        _tokens.HashRefreshToken("raw").Returns("lookup-hash");
+        _users.GetByRefreshTokenHashAsync("lookup-hash", Arg.Any<CancellationToken>()).Returns((user, oldToken));
+        _tokens.Generate(user).Returns(new TokenBundle("new-access", Now.AddHours(1), "new-raw", "new-hash", Now.AddDays(7)));
+
+        var handler = new RefreshAccessTokenHandler(_users, _tokens, TimeProvider.System);
+        var result = await handler.Handle(new RefreshAccessTokenCommand("raw", "127.0.0.1"), CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.AccessToken.Should().Be("new-access");
+        result.Value.RefreshToken.Should().Be("new-raw");
+        oldToken.IsActiveAt(Now).Should().BeFalse();            // token antigo revogado (rotação)
+        oldToken.ReplacedByTokenHash.Should().Be("new-hash");   // aponta o substituto
+        _users.Received(1).AddRefreshToken(Arg.Any<RefreshToken>());
+        await _users.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Refresh_with_unknown_token_is_unauthorized()
+    {
+        _tokens.HashRefreshToken(Arg.Any<string>()).Returns("h");
+        _users.GetByRefreshTokenHashAsync("h", Arg.Any<CancellationToken>()).Returns(((User, RefreshToken)?)null);
+
+        var handler = new RefreshAccessTokenHandler(_users, _tokens, TimeProvider.System);
+        var result = await handler.Handle(new RefreshAccessTokenCommand("raw", null), CancellationToken.None);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be("User.InvalidRefreshToken");
+    }
+
+    [Fact]
+    public async Task Refresh_with_revoked_token_is_unauthorized()
+    {
+        var (user, token) = StaffWithActiveRefresh();
+        token.Revoke("outro", null, Now); // já revogado → IsActiveAt false
+        _tokens.HashRefreshToken(Arg.Any<string>()).Returns("h");
+        _users.GetByRefreshTokenHashAsync("h", Arg.Any<CancellationToken>()).Returns((user, token));
+
+        var handler = new RefreshAccessTokenHandler(_users, _tokens, TimeProvider.System);
+        var result = await handler.Handle(new RefreshAccessTokenCommand("raw", null), CancellationToken.None);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be("User.InvalidRefreshToken");
+    }
+
+    [Fact]
+    public async Task Refresh_when_account_inactive_is_unauthorized()
+    {
+        var (user, token) = StaffWithActiveRefresh();
+        user.Deactivate(Now); // conta inativa
+        _tokens.HashRefreshToken(Arg.Any<string>()).Returns("h");
+        _users.GetByRefreshTokenHashAsync("h", Arg.Any<CancellationToken>()).Returns((user, token));
+
+        var handler = new RefreshAccessTokenHandler(_users, _tokens, TimeProvider.System);
+        var result = await handler.Handle(new RefreshAccessTokenCommand("raw", null), CancellationToken.None);
+
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be("User.LockedOrInactive");
     }
 }
