@@ -12,7 +12,7 @@ internal sealed class RefreshTokenConfiguration : IEntityTypeConfiguration<Refre
         builder.ToTable("refresh_tokens");
 
         builder.HasKey(rt => rt.Id);
-        builder.Property(rt => rt.Id).HasColumnName("id");
+        builder.Property(rt => rt.Id).HasColumnName("id").ValueGeneratedNever();
 
         builder.Property(rt => rt.UserId)
             .HasColumnName("user_id")

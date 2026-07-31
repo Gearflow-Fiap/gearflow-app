@@ -14,7 +14,8 @@ internal sealed class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.HasKey(v => v.Id);
         builder.Property(v => v.Id)
             .HasColumnName("id")
-            .HasConversion(id => id.Value, value => VehicleId.From(value));
+            .HasConversion(id => id.Value, value => VehicleId.From(value))
+            .ValueGeneratedNever();
 
         builder.Property(v => v.ClientId)
             .HasColumnName("client_id")
