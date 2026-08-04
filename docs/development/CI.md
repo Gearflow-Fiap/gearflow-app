@@ -33,14 +33,15 @@ security ───────┘
 
 ## Piso de cobertura (80%)
 
-- Fonte de exclusões: [`coverage.runsettings`](../../coverage.runsettings) (raiz). Detalhe conceitual
-  em [TEST_COVERAGE.md](TEST_COVERAGE.md).
-- Piso versionado em [`docs/coverage/coverage-baseline.txt`](../coverage/coverage-baseline.txt) (**80**).
-- **PR/push**: falha (barra o merge) se a cobertura de linha ficar **abaixo de 80%** (sem tolerância).
-- **push em `main`**: publica o badge (`coverage-badge.json`) com a cobertura **real**; o piso é fixo
-  e só muda por edição humana do arquivo.
+- Exclusões: [`coverage.runsettings`](../../coverage.runsettings) + `[ExcludeFromCodeCoverage]` no
+  wiring de DI. Detalhe conceitual em [TEST_COVERAGE.md](TEST_COVERAGE.md).
+- Pisos versionados: [`coverage-baseline.txt`](../coverage/coverage-baseline.txt) (linha, **80**) e
+  [`coverage-baseline-branch.txt`](../coverage/coverage-baseline-branch.txt) (branch, **80**).
+- **PR/push**: falha (barra o merge) se a cobertura de **linha** OU de **branch** ficar abaixo de 80%.
+- **push em `main`**: publica o badge (`coverage-badge.json`) com a cobertura **real**; os pisos são
+  fixos e só mudam por edição humana dos arquivos.
 
-> Cobertura atual ~86%. Para elevar o piso no futuro, edite `coverage-baseline.txt`.
+> Cobertura atual: linha ~94% · branch ~82%. Para elevar os pisos, edite os arquivos `coverage-baseline*.txt`.
 
 ## Imagens (GHCR)
 

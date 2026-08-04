@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Shared.Infrastructure.Auth;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring de autenticação JWT — fora da meta de cobertura
 public static class JwtAuthenticationExtensions
 {
     public static IServiceCollection AddJwtAuthentication(

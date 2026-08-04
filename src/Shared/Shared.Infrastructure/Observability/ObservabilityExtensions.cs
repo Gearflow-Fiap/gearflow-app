@@ -17,6 +17,7 @@ namespace Shared.Infrastructure.Observability;
 /// Metrics: ASP.NET Core, HttpClient, runtime/GC — sempre expostos em <c>/metrics</c> para
 /// scraping Prometheus (via <see cref="MapObservability"/>).
 /// </summary>
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring de OpenTelemetry — fora da meta de cobertura
 public static class ObservabilityExtensions
 {
     /// <summary>
