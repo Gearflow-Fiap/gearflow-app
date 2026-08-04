@@ -57,11 +57,18 @@
   <Folder Name="/tests/Inventory/">
     <Project Path="tests/Inventory/Inventory.UnitTests/Inventory.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/tests/Notifications/">
+    <Project Path="tests/Notifications/Notifications.UnitTests/Notifications.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/tests/Workshop/">
     <Project Path="tests/Workshop/Workshop.UnitTests/Workshop.UnitTests.csproj" />
     <Project Path="tests/Workshop/Workshop.IntegrationTests/Workshop.IntegrationTests.csproj" />
   </Folder>
   <Folder Name="/tests/Identity/">
     <Project Path="tests/Identity/Identity.UnitTests/Identity.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Shared/">
+    <Project Path="tests/Shared/Shared.Domain.UnitTests/Shared.Domain.UnitTests.csproj" />
+    <Project Path="tests/Shared/Shared.Infrastructure.UnitTests/Shared.Infrastructure.UnitTests.csproj" />
   </Folder>
 </Solution>
