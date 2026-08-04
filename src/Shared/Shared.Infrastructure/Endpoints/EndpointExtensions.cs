@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Shared.Infrastructure.Endpoints;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // descoberta/registro de endpoints (wiring) — fora da meta
 public static class EndpointExtensions
 {
     /// <summary>Valida o request DTO via <see cref="ValidationFilter{TRequest}"/> antes do handler.</summary>

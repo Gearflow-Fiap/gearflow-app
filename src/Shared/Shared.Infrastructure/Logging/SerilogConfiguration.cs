@@ -4,6 +4,7 @@ using Serilog.Formatting.Json;
 
 namespace Shared.Infrastructure.Logging;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring de Serilog — fora da meta de cobertura
 public static class SerilogConfiguration
 {
     public static Serilog.ILogger ConfigureLogging(string apiName, bool isDevelopment)
