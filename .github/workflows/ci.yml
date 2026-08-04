@@ -108,13 +108,14 @@ jobs:
       - name: Restore
         run: dotnet restore GearFlow.slnx
 
-      # Pacotes com CVE conhecido (inclui transitivos). O comando sempre sai 0,
-      # então detectamos "> vulnerable" na saída e quebramos o job manualmente.
+      # Pacotes com CVE conhecido (inclui transitivos). O `dotnet list` sai com
+      # código 1 ao topar com projetos non-PackageReference (ex.: docker-compose.dcproj),
+      # então NÃO usamos pipefail/-e aqui — o veredito vem do grep na saída.
       - name: Vulnerable packages (fail on any)
         run: |
-          set -o pipefail
-          dotnet list GearFlow.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable.txt
-          if grep -q '> .* Vulnerable' vulnerable.txt || grep -qi 'has the following vulnerable packages' vulnerable.txt; then
+          dotnet list GearFlow.slnx package --vulnerable --include-transitive > vulnerable.txt 2>&1 || true
+          cat vulnerable.txt
+          if grep -qiE 'has the following vulnerable packages' vulnerable.txt; then
             echo "::error::Dependências vulneráveis encontradas — veja o log acima."
             exit 1
           fi
