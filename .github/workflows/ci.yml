@@ -10,6 +10,11 @@ on:
 permissions:
   contents: read
 
+# Cancela runs supersedidos da mesma ref (economiza runner e feedback mais rápido).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   DOTNET_VERSION: "10.0.x"
   DOTNET_NOLOGO: "true"
@@ -83,6 +88,49 @@ jobs:
           path: ./coverage-integration/**/coverage.cobertura.xml
           if-no-files-found: ignore
 
+  security:
+    name: Security (vulnerable / deprecated deps)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('Directory.Packages.props') }}
+          restore-keys: nuget-
+
+      - name: Restore
+        run: dotnet restore GearFlow.slnx
+
+      # Pacotes com CVE conhecido (inclui transitivos). O comando sempre sai 0,
+      # então detectamos "> vulnerable" na saída e quebramos o job manualmente.
+      - name: Vulnerable packages (fail on any)
+        run: |
+          set -o pipefail
+          dotnet list GearFlow.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable.txt
+          if grep -q '> .* Vulnerable' vulnerable.txt || grep -qi 'has the following vulnerable packages' vulnerable.txt; then
+            echo "::error::Dependências vulneráveis encontradas — veja o log acima."
+            exit 1
+          fi
+          echo "Sem pacotes vulneráveis." >> "$GITHUB_STEP_SUMMARY"
+
+      # Pacotes deprecados: informativo (não quebra o build), reportado no resumo.
+      - name: Deprecated packages (report only)
+        if: always()
+        run: |
+          {
+            echo "### Pacotes deprecados";
+            echo '```';
+            dotnet list GearFlow.slnx package --deprecated 2>&1 || true;
+            echo '```';
+          } >> "$GITHUB_STEP_SUMMARY"
+
   coverage:
     name: Coverage (merge + ratchet)
     runs-on: ubuntu-latest
@@ -113,5 +161,53 @@ jobs:
 
       - name: Coverage summary
         run: cat ./coverage-report/Summary.txt || true
-      # TODO(ratchet): comparar com docs/coverage/coverage-baseline.txt (tolerância 0.5pp),
-      # barrar PR abaixo do baseline e, em push para main, subir o baseline + publicar badge.
+
+      # Extrai a % de linha do TextSummary e compara com o baseline versionado.
+      # Tolerância de 0,5pp (ver docs/development/TEST_COVERAGE.md).
+      - name: Ratchet gate
+        id: ratchet
+        run: |
+          set -euo pipefail
+          COVERAGE=$(grep -oP 'Line coverage:\s*\K[0-9.]+' ./coverage-report/Summary.txt | head -n1)
+          COVERAGE=${COVERAGE:-0}
+          BASELINE=$(tr -d '[:space:]' < docs/coverage/coverage-baseline.txt 2>/dev/null || echo 0)
+          BASELINE=${BASELINE:-0}
+          echo "coverage=$COVERAGE" >> "$GITHUB_OUTPUT"
+          echo "baseline=$BASELINE" >> "$GITHUB_OUTPUT"
+          echo "Cobertura de linha: ${COVERAGE}% (baseline: ${BASELINE}%)" | tee -a "$GITHUB_STEP_SUMMARY"
+          # Falha se cair mais de 0,5pp abaixo do baseline.
+          awk -v c="$COVERAGE" -v b="$BASELINE" 'BEGIN { exit !(c + 0.5 < b) }' && {
+            echo "::error::Cobertura ${COVERAGE}% abaixo do baseline ${BASELINE}% (tolerância 0,5pp)."
+            exit 1
+          } || true
+
+      # Comentário fixo de cobertura no PR (recria a cada push).
+      - name: PR coverage comment
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          path: ./coverage-report/SummaryGithub.md
+
+      # Em push para main: se a cobertura subiu, sobe o baseline + badge e commita.
+      # [skip ci] evita loop de workflow. Requer que a branch protection permita
+      # push do GITHUB_TOKEN (ver docs/development/CI.md).
+      - name: Bump baseline + badge (main only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          COVERAGE="${{ steps.ratchet.outputs.coverage }}"
+          BASELINE="${{ steps.ratchet.outputs.baseline }}"
+          if awk -v c="$COVERAGE" -v b="$BASELINE" 'BEGIN { exit !(c > b) }'; then
+            mkdir -p docs/coverage
+            printf '%s\n' "$COVERAGE" > docs/coverage/coverage-baseline.txt
+            COLOR=$(awk -v c="$COVERAGE" 'BEGIN { print (c>=90)?"brightgreen":(c>=75)?"green":(c>=60)?"yellowgreen":(c>=40)?"orange":"red" }')
+            printf '{"schemaVersion":1,"label":"coverage","message":"%s%%","color":"%s"}\n' "$COVERAGE" "$COLOR" > docs/coverage/coverage-badge.json
+            git config user.name  "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add docs/coverage/coverage-baseline.txt docs/coverage/coverage-badge.json
+            git commit -m "chore(coverage): sobe baseline para ${COVERAGE}% [skip ci]"
+            git push
+          else
+            echo "Cobertura não subiu (${COVERAGE}% <= ${BASELINE}%); baseline mantido."
+          fi
