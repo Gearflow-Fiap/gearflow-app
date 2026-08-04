@@ -25,7 +25,7 @@ jobs:
     name: Build + Unit + Architecture
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -63,7 +63,7 @@ jobs:
     name: Integration (Testcontainers / SQL Server)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -92,7 +92,7 @@ jobs:
     name: Security (vulnerable / deprecated deps)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -140,7 +140,7 @@ jobs:
       contents: write         # commit do baseline/badge em push na main
       pull-requests: write    # comentário fixo de cobertura no PR
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v4
         with:
