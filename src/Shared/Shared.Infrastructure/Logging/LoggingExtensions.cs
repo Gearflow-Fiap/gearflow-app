@@ -3,6 +3,7 @@ using Serilog;
 
 namespace Shared.Infrastructure.Logging;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring de logging — fora da meta de cobertura significativa
 public static class LoggingExtensions
 {
     public static WebApplicationBuilder AddSerilogLogging(this WebApplicationBuilder builder, string apiName)

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Identity.Infrastructure.Security;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring de validação de security stamp — fora da meta de cobertura significativa
 public static class SecurityStampValidationExtensions
 {
     /// <summary>

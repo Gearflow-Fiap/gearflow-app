@@ -6,6 +6,7 @@ using System.Text.Json;
 
 namespace Shared.Infrastructure.HealthChecks;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring de DI/health — fora da meta de cobertura significativa
 public static class HealthCheckEndpointExtensions
 {
     public static WebApplication MapCustomHealthChecks(this WebApplication app)

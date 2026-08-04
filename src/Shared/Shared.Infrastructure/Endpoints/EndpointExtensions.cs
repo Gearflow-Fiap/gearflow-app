@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Shared.Infrastructure.Endpoints;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring de mapeamento de endpoints — fora da meta de cobertura significativa
 public static class EndpointExtensions
 {
     /// <summary>Valida o request DTO via <see cref="ValidationFilter{TRequest}"/> antes do handler.</summary>

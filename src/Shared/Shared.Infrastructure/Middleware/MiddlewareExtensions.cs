@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Shared.Infrastructure.Middleware;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring do pipeline — fora da meta de cobertura significativa
 public static class MiddlewareExtensions
 {
     /// <summary>

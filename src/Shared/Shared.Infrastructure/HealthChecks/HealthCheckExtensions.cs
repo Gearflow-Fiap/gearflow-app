@@ -4,6 +4,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Shared.Infrastructure.HealthChecks;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // wiring de DI/health — fora da meta de cobertura significativa
 public static class HealthCheckExtensions
 {
     public static IHealthChecksBuilder AddCustomHealthChecks(
