@@ -25,14 +25,14 @@ jobs:
     name: Build + Unit + Architecture
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: nuget-${{ hashFiles('Directory.Packages.props') }}
@@ -53,7 +53,7 @@ jobs:
           --results-directory ./coverage-unit
 
       - name: Upload unit coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-unit
           path: ./coverage-unit/**/coverage.cobertura.xml
@@ -63,9 +63,9 @@ jobs:
     name: Integration (Testcontainers / SQL Server)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -82,7 +82,7 @@ jobs:
           --blame-hang-timeout 10m
 
       - name: Upload integration coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-integration
           path: ./coverage-integration/**/coverage.cobertura.xml
@@ -92,14 +92,14 @@ jobs:
     name: Security (vulnerable / deprecated deps)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: nuget-${{ hashFiles('Directory.Packages.props') }}
@@ -140,9 +140,9 @@ jobs:
       contents: write         # commit do baseline/badge em push na main
       pull-requests: write    # comentário fixo de cobertura no PR
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -150,7 +150,7 @@ jobs:
         run: dotnet tool restore
 
       - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ./coverage-all
 
@@ -185,7 +185,7 @@ jobs:
       - name: PR coverage comment
         if: github.event_name == 'pull_request'
         continue-on-error: true   # comentário é conveniência; não deve derrubar o gate (ex.: PR de fork)
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           recreate: true
           path: ./coverage-report/SummaryGithub.md
