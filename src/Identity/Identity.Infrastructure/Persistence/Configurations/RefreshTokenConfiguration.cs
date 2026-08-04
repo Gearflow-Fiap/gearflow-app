@@ -12,7 +12,9 @@ internal sealed class RefreshTokenConfiguration : IEntityTypeConfiguration<Refre
         builder.ToTable("refresh_tokens");
 
         builder.HasKey(rt => rt.Id);
-        builder.Property(rt => rt.Id).HasColumnName("id");
+        // Chave gerada no domínio; sem isto o EF gera UPDATE (em vez de INSERT) ao adicionar um
+        // novo refresh token a um User já rastreado. Ver nota em ServiceOrderConfiguration.
+        builder.Property(rt => rt.Id).HasColumnName("id").ValueGeneratedNever();
 
         builder.Property(rt => rt.UserId)
             .HasColumnName("user_id")

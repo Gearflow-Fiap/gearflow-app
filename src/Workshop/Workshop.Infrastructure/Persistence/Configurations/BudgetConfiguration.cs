@@ -14,7 +14,9 @@ internal sealed class BudgetConfiguration : IEntityTypeConfiguration<Budget>
         builder.HasKey(b => b.Id);
         builder.Property(b => b.Id)
             .HasColumnName("id")
-            .HasConversion(id => id.Value, value => BudgetId.From(value));
+            .HasConversion(id => id.Value, value => BudgetId.From(value))
+            // Chave gerada no domínio (BudgetId.New()) — ver nota em ServiceOrderConfiguration.
+            .ValueGeneratedNever();
 
         builder.Property(b => b.ServiceOrderId)
             .HasColumnName("service_order_id")
@@ -30,7 +32,7 @@ internal sealed class BudgetConfiguration : IEntityTypeConfiguration<Budget>
             j.ToTable("budget_jobs");
             j.WithOwner().HasForeignKey("budget_id");
             j.HasKey(x => x.Id);
-            j.Property(x => x.Id).HasColumnName("id");
+            j.Property(x => x.Id).HasColumnName("id").ValueGeneratedNever();
             j.Property(x => x.JobId).HasColumnName("job_id");
             j.Property(x => x.PriceCents).HasColumnName("price_cents");
             j.Property(x => x.IsExecuted).HasColumnName("is_executed");
@@ -43,7 +45,7 @@ internal sealed class BudgetConfiguration : IEntityTypeConfiguration<Budget>
             p.ToTable("budget_parts");
             p.WithOwner().HasForeignKey("budget_id");
             p.HasKey(x => x.Id);
-            p.Property(x => x.Id).HasColumnName("id");
+            p.Property(x => x.Id).HasColumnName("id").ValueGeneratedNever();
             p.Property(x => x.PartId).HasColumnName("part_id");
             p.Property(x => x.PriceCents).HasColumnName("price_cents");
             p.Property(x => x.Quantity).HasColumnName("quantity");
@@ -55,7 +57,7 @@ internal sealed class BudgetConfiguration : IEntityTypeConfiguration<Budget>
             c.ToTable("budget_consumables");
             c.WithOwner().HasForeignKey("budget_id");
             c.HasKey(x => x.Id);
-            c.Property(x => x.Id).HasColumnName("id");
+            c.Property(x => x.Id).HasColumnName("id").ValueGeneratedNever();
             c.Property(x => x.ConsumableId).HasColumnName("consumable_id");
             c.Property(x => x.PriceCents).HasColumnName("price_cents");
             c.Property(x => x.Quantity).HasColumnName("quantity").HasPrecision(18, 3);
