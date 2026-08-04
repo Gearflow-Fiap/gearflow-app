@@ -1,7 +1,7 @@
 # Cobertura de testes — GearFlow
 
-Herdado do `delivery-app-backend`: cobertura consolidada com **coverlet** + **ReportGenerator**, com
-um **gate ratchet** no CI (o piso sobe a cada merge em `main`, nunca desce).
+Cobertura consolidada com **coverlet** + **ReportGenerator**, com um **piso obrigatório de 80%** no CI
+(o merge é barrado se a cobertura de linha ficar abaixo de 80%). Cobertura atual: **~85%**.
 
 ## Como funciona
 
@@ -19,20 +19,22 @@ dotnet tool restore
 reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:coverage -reporttypes:"Html;TextSummary"
 ```
 
-## Gate ratchet (CI)
+## Piso de cobertura (CI)
 
 Implementado no job `coverage` do [`ci.yml`](../../.github/workflows/ci.yml) (visão geral da esteira
-em [CI.md](CI.md)). O job mescla a cobertura dos jobs de unit + integração, compara com
-`docs/coverage/coverage-baseline.txt` (tolerância de 0,5pp) e:
+em [CI.md](CI.md)). O job mescla a cobertura dos jobs de unit + integração e:
 
-- **barra** o PR se a cobertura de linha cair mais de 0,5pp abaixo do baseline (e posta um comentário
-  fixo de cobertura no PR);
-- em push para `main`, **sobe** o baseline e publica o badge (`docs/coverage/coverage-badge.json`),
-  commitando com `[skip ci]`.
+- **barra** o PR se a cobertura de linha ficar **abaixo do piso** de
+  `docs/coverage/coverage-baseline.txt` (**80%**, sem tolerância) e posta um comentário fixo de
+  cobertura no PR;
+- em push para `main`, publica o badge (`docs/coverage/coverage-badge.json`) com a cobertura **real**
+  (o piso é fixo — só muda por edição humana do arquivo).
 
-> O baseline nasce em `0`; o primeiro push em `main` estabelece o piso real e, a partir daí, só sobe.
+> O piso é fixo em 80% por decisão de produto. Para elevá-lo no futuro (ratchet manual), edite
+> `coverage-baseline.txt`.
 
-**Meta**: 100% "significativo". Projeto novo **nasce contribuindo** cobertura, não abaixo do piso.
+**Meta**: 100% "significativo". O bootstrap/DI (health, observabilidade, Serilog, JWT wiring) é
+marcado com `[ExcludeFromCodeCoverage]` — fora do denominador, como `Program.cs`.
 
 ## Convenções de teste
 

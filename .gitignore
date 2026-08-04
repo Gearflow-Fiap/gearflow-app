@@ -11,6 +11,8 @@ TestResults/
 # Diretório de saída local do reportgenerator (raiz). Ancorado com "/" para não
 # ignorar docs/coverage/ (baseline + badge versionados do gate ratchet).
 /coverage/
+/coverage-plan/
+/coverage-plan-report/
 *.trx
 *.coverage
 *.cobertura.xml

@@ -31,17 +31,16 @@ security ───────┘
 - **coverage** — mescla a cobertura (unit + integração) com ReportGenerator, aplica o
   [gate ratchet](#gate-ratchet-de-cobertura) e comenta no PR.
 
-## Gate ratchet de cobertura
+## Piso de cobertura (80%)
 
-- Fonte de exclusões: [`coverage.runsettings`](../../coverage.runsettings) (raiz). Detalhe conceitual
-  em [TEST_COVERAGE.md](TEST_COVERAGE.md).
-- Baseline versionado em [`docs/coverage/coverage-baseline.txt`](../coverage/coverage-baseline.txt).
-- **PR**: falha se a cobertura de linha cair **mais de 0,5pp** abaixo do baseline.
-- **push em `main`**: se a cobertura **subiu**, o job sobrescreve o baseline e o badge
-  (`coverage-badge.json`) e commita com `[skip ci]`.
+- Fonte de exclusões: [`coverage.runsettings`](../../coverage.runsettings) (raiz) + `[ExcludeFromCodeCoverage]`
+  no bootstrap/DL. Detalhe conceitual em [TEST_COVERAGE.md](TEST_COVERAGE.md).
+- Piso versionado em [`docs/coverage/coverage-baseline.txt`](../coverage/coverage-baseline.txt) (**80**).
+- **PR/push**: falha (barra o merge) se a cobertura de linha ficar **abaixo de 80%** (sem tolerância).
+- **push em `main`**: publica o badge (`coverage-badge.json`) com a cobertura **real**; o piso é fixo
+  e só muda por edição humana do arquivo.
 
-> O baseline nasce em `0` — o **primeiro push em `main`** estabelece o piso real. A partir daí ele só
-> sobe.
+> Cobertura atual ~85%. Para elevar o piso no futuro, edite `coverage-baseline.txt`.
 
 ## Imagens (GHCR)
 
@@ -78,4 +77,4 @@ Enquanto os repos de infra não existem, o deploy é manual a partir da imagem p
 
 Em *Settings → Branches* (`main` e `develop`), exigir como checks obrigatórios:
 `Build + Unit + Architecture`, `Integration (Testcontainers / SQL Server)`,
-`Security (vulnerable / deprecated deps)`, `Coverage (merge + ratchet)` e `Analyze (csharp)`.
+`Security (vulnerable / deprecated deps)`, `Coverage (floor 80%)` e `Analyze (csharp)`.
