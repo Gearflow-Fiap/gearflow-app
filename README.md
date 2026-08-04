@@ -3,6 +3,10 @@
 Plataforma de gestão de **oficina mecânica**: clientes/veículos, catálogo de serviços, estoque de
 peças/insumos e o ciclo de vida da **Ordem de Serviço** — do recebimento à entrega.
 
+[![CI](https://github.com/Gearflow-Fiap/gearflow-app/actions/workflows/ci.yml/badge.svg)](https://github.com/Gearflow-Fiap/gearflow-app/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Gearflow-Fiap/gearflow-app/actions/workflows/codeql.yml/badge.svg)](https://github.com/Gearflow-Fiap/gearflow-app/actions/workflows/codeql.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Gearflow-Fiap/gearflow-app/main/docs/coverage/coverage-badge.json)](docs/development/TEST_COVERAGE.md)
+
 Este é o repositório da **aplicação principal** (repo #4 da Fase 3 do Tech Challenge), reorganizado
 de Clean Architecture em camadas para **Bounded Contexts** (monólito modular).
 
@@ -11,6 +15,14 @@ de Clean Architecture em camadas para **Bounded Contexts** (monólito modular).
 > [BOUNDED_CONTEXTS](docs/architecture/BOUNDED_CONTEXTS.md); diagramas (componentes + sequência +
 > estados) em [ARCHITECTURE_DIAGRAMS](docs/architecture/ARCHITECTURE_DIAGRAMS.md). Veja a
 > [checklist de entrega da Fase 3](#arquitetura--documentação-fase-3) abaixo.
+
+## CI / Esteira
+
+Integração contínua no GitHub Actions: build Release, testes (unit + **arquitetura** + integração via
+Testcontainers), **segurança** de dependências, **CodeQL** (SAST) e **cobertura** com piso obrigatório
+de 80%. Em push/tag, publica as imagens `gearflow-api` e `gearflow-gateway` no **GHCR**. O **deploy**
+(Terraform/K8s) fica nos repos de infra da Fase 3. Detalhes em
+[docs/development/CI.md](docs/development/CI.md).
 
 ## Tecnologias
 

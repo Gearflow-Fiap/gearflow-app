@@ -8,7 +8,10 @@ obj/
 .vs/
 artifacts/
 TestResults/
-coverage/
+# Ancorado com "/" para não ignorar docs/coverage/ (baseline + badge versionados do gate).
+/coverage/
+/coverage-plan/
+/coverage-plan-report/
 *.trx
 *.coverage
 *.cobertura.xml
