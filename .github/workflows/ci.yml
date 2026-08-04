@@ -25,14 +25,14 @@ jobs:
     name: Build + Unit + Architecture
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: nuget-${{ hashFiles('Directory.Packages.props') }}
@@ -53,7 +53,7 @@ jobs:
           --results-directory ./coverage-unit
 
       - name: Upload unit coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-unit
           path: ./coverage-unit/**/coverage.cobertura.xml
@@ -63,9 +63,9 @@ jobs:
     name: Integration (Testcontainers / SQL Server)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -82,7 +82,7 @@ jobs:
           --blame-hang-timeout 10m
 
       - name: Upload integration coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-integration
           path: ./coverage-integration/**/coverage.cobertura.xml
@@ -92,14 +92,14 @@ jobs:
     name: Security (vulnerable / deprecated deps)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: nuget-${{ hashFiles('Directory.Packages.props') }}
@@ -140,9 +140,9 @@ jobs:
       contents: write         # commit do baseline/badge em push na main
       pull-requests: write    # comentário fixo de cobertura no PR
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -150,7 +150,7 @@ jobs:
         run: dotnet tool restore
 
       - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ./coverage-all
 
@@ -164,28 +164,30 @@ jobs:
       - name: Coverage summary
         run: cat ./coverage-report/Summary.txt || true
 
-      # Piso fixo de cobertura: falha o job (e barra o merge) se a cobertura de linha ficar
-      # abaixo do piso definido em docs/coverage/coverage-baseline.txt (80%). Sem tolerância.
+      # Piso fixo de cobertura: falha o job (e barra o merge) se a cobertura de LINHA ou de BRANCH
+      # ficar abaixo dos pisos em docs/coverage/coverage-baseline{,-branch}.txt (80% cada). Sem tolerância.
       - name: Coverage floor gate
         id: coverage
         run: |
           set -euo pipefail
-          COVERAGE=$(grep -oP 'Line coverage:\s*\K[0-9.]+' ./coverage-report/Summary.txt | head -n1)
-          COVERAGE=${COVERAGE:-0}
-          FLOOR=$(tr -d '[:space:]' < docs/coverage/coverage-baseline.txt 2>/dev/null || echo 80)
-          FLOOR=${FLOOR:-80}
-          echo "coverage=$COVERAGE" >> "$GITHUB_OUTPUT"
-          echo "Cobertura de linha: ${COVERAGE}% (piso obrigatório: ${FLOOR}%)" | tee -a "$GITHUB_STEP_SUMMARY"
-          if awk -v c="$COVERAGE" -v f="$FLOOR" 'BEGIN { exit !(c < f) }'; then
-            echo "::error::Cobertura ${COVERAGE}% abaixo do piso obrigatório de ${FLOOR}%."
-            exit 1
-          fi
+          LINE=$(grep -oP 'Line coverage:\s*\K[0-9.]+' ./coverage-report/Summary.txt | head -n1)
+          BRANCH=$(grep -oP 'Branch coverage:\s*\K[0-9.]+' ./coverage-report/Summary.txt | head -n1)
+          LINE=${LINE:-0}; BRANCH=${BRANCH:-0}
+          LINE_FLOOR=$(tr -d '[:space:]' < docs/coverage/coverage-baseline.txt 2>/dev/null || echo 80); LINE_FLOOR=${LINE_FLOOR:-80}
+          BRANCH_FLOOR=$(tr -d '[:space:]' < docs/coverage/coverage-baseline-branch.txt 2>/dev/null || echo 80); BRANCH_FLOOR=${BRANCH_FLOOR:-80}
+          echo "coverage=$LINE" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Linha: ${LINE}% (piso ${LINE_FLOOR}%) · Branch: ${BRANCH}% (piso ${BRANCH_FLOOR}%)" | tee -a "$GITHUB_STEP_SUMMARY"
+          fail=0
+          awk -v c="$LINE"   -v f="$LINE_FLOOR"   'BEGIN { exit !(c < f) }' && { echo "::error::Cobertura de linha ${LINE}% abaixo do piso ${LINE_FLOOR}%."; fail=1; } || true
+          awk -v c="$BRANCH" -v f="$BRANCH_FLOOR" 'BEGIN { exit !(c < f) }' && { echo "::error::Cobertura de branch ${BRANCH}% abaixo do piso ${BRANCH_FLOOR}%."; fail=1; } || true
+          [ "$fail" -eq 0 ] || exit 1
 
       # Comentário fixo de cobertura no PR (recria a cada push).
       - name: PR coverage comment
         if: github.event_name == 'pull_request'
         continue-on-error: true   # comentário é conveniência; não deve derrubar o gate (ex.: PR de fork)
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           recreate: true
           path: ./coverage-report/SummaryGithub.md

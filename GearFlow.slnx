@@ -67,4 +67,8 @@
   <Folder Name="/tests/Notifications/">
     <Project Path="tests/Notifications/Notifications.UnitTests/Notifications.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/tests/Shared/">
+    <Project Path="tests/Shared/Shared.Domain.UnitTests/Shared.Domain.UnitTests.csproj" />
+    <Project Path="tests/Shared/Shared.Infrastructure.UnitTests/Shared.Infrastructure.UnitTests.csproj" />
+  </Folder>
 </Solution>

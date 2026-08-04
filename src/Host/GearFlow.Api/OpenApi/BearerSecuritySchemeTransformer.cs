@@ -8,6 +8,7 @@ namespace GearFlow.Api.OpenApi;
 /// botão "Authorize" e as chamadas a endpoints protegidos vão sem o header Authorization.
 /// Fluxo: faça login em <c>/api/identity/auth/login</c>, copie o <c>accessToken</c> e cole no Scalar.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage] // transformer OpenAPI (setup) — fora da meta de cobertura
 internal sealed class BearerSecuritySchemeTransformer : IOpenApiDocumentTransformer
 {
     private const string SchemeId = "Bearer";
