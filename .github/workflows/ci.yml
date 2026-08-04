@@ -164,22 +164,24 @@ jobs:
       - name: Coverage summary
         run: cat ./coverage-report/Summary.txt || true
 
-      # Piso fixo de cobertura: falha o job (e barra o merge) se a cobertura de linha ficar
-      # abaixo do piso definido em docs/coverage/coverage-baseline.txt (80%). Sem tolerância.
+      # Piso fixo de cobertura: falha o job (e barra o merge) se a cobertura de LINHA ou de BRANCH
+      # ficar abaixo dos pisos em docs/coverage/coverage-baseline{,-branch}.txt (80% cada). Sem tolerância.
       - name: Coverage floor gate
         id: coverage
         run: |
           set -euo pipefail
-          COVERAGE=$(grep -oP 'Line coverage:\s*\K[0-9.]+' ./coverage-report/Summary.txt | head -n1)
-          COVERAGE=${COVERAGE:-0}
-          FLOOR=$(tr -d '[:space:]' < docs/coverage/coverage-baseline.txt 2>/dev/null || echo 80)
-          FLOOR=${FLOOR:-80}
-          echo "coverage=$COVERAGE" >> "$GITHUB_OUTPUT"
-          echo "Cobertura de linha: ${COVERAGE}% (piso obrigatório: ${FLOOR}%)" | tee -a "$GITHUB_STEP_SUMMARY"
-          if awk -v c="$COVERAGE" -v f="$FLOOR" 'BEGIN { exit !(c < f) }'; then
-            echo "::error::Cobertura ${COVERAGE}% abaixo do piso obrigatório de ${FLOOR}%."
-            exit 1
-          fi
+          LINE=$(grep -oP 'Line coverage:\s*\K[0-9.]+' ./coverage-report/Summary.txt | head -n1)
+          BRANCH=$(grep -oP 'Branch coverage:\s*\K[0-9.]+' ./coverage-report/Summary.txt | head -n1)
+          LINE=${LINE:-0}; BRANCH=${BRANCH:-0}
+          LINE_FLOOR=$(tr -d '[:space:]' < docs/coverage/coverage-baseline.txt 2>/dev/null || echo 80); LINE_FLOOR=${LINE_FLOOR:-80}
+          BRANCH_FLOOR=$(tr -d '[:space:]' < docs/coverage/coverage-baseline-branch.txt 2>/dev/null || echo 80); BRANCH_FLOOR=${BRANCH_FLOOR:-80}
+          echo "coverage=$LINE" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Linha: ${LINE}% (piso ${LINE_FLOOR}%) · Branch: ${BRANCH}% (piso ${BRANCH_FLOOR}%)" | tee -a "$GITHUB_STEP_SUMMARY"
+          fail=0
+          awk -v c="$LINE"   -v f="$LINE_FLOOR"   'BEGIN { exit !(c < f) }' && { echo "::error::Cobertura de linha ${LINE}% abaixo do piso ${LINE_FLOOR}%."; fail=1; } || true
+          awk -v c="$BRANCH" -v f="$BRANCH_FLOOR" 'BEGIN { exit !(c < f) }' && { echo "::error::Cobertura de branch ${BRANCH}% abaixo do piso ${BRANCH_FLOOR}%."; fail=1; } || true
+          [ "$fail" -eq 0 ] || exit 1
 
       # Comentário fixo de cobertura no PR (recria a cada push).
       - name: PR coverage comment
