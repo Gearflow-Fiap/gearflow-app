@@ -8,7 +8,9 @@ obj/
 .vs/
 artifacts/
 TestResults/
-coverage/
+# Diretório de saída local do reportgenerator (raiz). Ancorado com "/" para não
+# ignorar docs/coverage/ (baseline + badge versionados do gate ratchet).
+/coverage/
 *.trx
 *.coverage
 *.cobertura.xml

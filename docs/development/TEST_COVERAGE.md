@@ -21,11 +21,16 @@ reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:coverage -report
 
 ## Gate ratchet (CI)
 
-O job `coverage` mescla a cobertura dos jobs de unit + integração, compara com
+Implementado no job `coverage` do [`ci.yml`](../../.github/workflows/ci.yml) (visão geral da esteira
+em [CI.md](CI.md)). O job mescla a cobertura dos jobs de unit + integração, compara com
 `docs/coverage/coverage-baseline.txt` (tolerância de 0,5pp) e:
 
-- **barra** o PR se cair abaixo do baseline;
-- em push para `main`, **sobe** o baseline e publica o badge.
+- **barra** o PR se a cobertura de linha cair mais de 0,5pp abaixo do baseline (e posta um comentário
+  fixo de cobertura no PR);
+- em push para `main`, **sobe** o baseline e publica o badge (`docs/coverage/coverage-badge.json`),
+  commitando com `[skip ci]`.
+
+> O baseline nasce em `0`; o primeiro push em `main` estabelece o piso real e, a partir daí, só sobe.
 
 **Meta**: 100% "significativo". Projeto novo **nasce contribuindo** cobertura, não abaixo do piso.
 
