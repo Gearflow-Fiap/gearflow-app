@@ -137,7 +137,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build-and-unit, integration ]
     permissions:
-      contents: write
+      contents: write         # commit do baseline/badge em push na main
+      pull-requests: write    # comentário fixo de cobertura no PR
     steps:
       - uses: actions/checkout@v4
 
@@ -185,6 +186,7 @@ jobs:
       # Comentário fixo de cobertura no PR (recria a cada push).
       - name: PR coverage comment
         if: github.event_name == 'pull_request'
+        continue-on-error: true   # comentário é conveniência; não deve derrubar o gate (ex.: PR de fork)
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           recreate: true
