@@ -26,3 +26,7 @@ updates:
     labels: [ "dependencies", "github-actions" ]
     commit-message:
       prefix: "chore(ci)"
+    groups:
+      # Um PR só com todas as atualizações de actions (reduz ruído).
+      github-actions:
+        patterns: [ "*" ]
