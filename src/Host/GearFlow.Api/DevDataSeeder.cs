@@ -17,7 +17,7 @@ namespace GearFlow.Api;
 /// <summary>
 /// Massa de dados fictícios (realistas) para desenvolvimento — serviços, estoque, clientes/veículos e
 /// algumas ordens de serviço em estados variados. Idempotente: só semeia se o catálogo estiver vazio.
-/// Roda apenas em Development.
+/// Roda em Development, ou em outros ambientes se <c>Seed:EnableDevData</c> for <c>true</c>.
 /// </summary>
 public static class DevDataSeeder
 {

@@ -26,17 +26,23 @@ spec:
                 name: gearflow-secret
             - configMapRef:
                 name: gearflow-configmap
+          # Cobre migrations (6 DbContexts) + seed de dados, que rodam antes da porta abrir.
+          # Até 300s (30 x 10s) antes do liveness/readiness passarem a valer.
+          startupProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health/live
               port: 8080
-            initialDelaySeconds: 30
             periodSeconds: 15
           readinessProbe:
             httpGet:
               path: /health/ready
               port: 8080
-            initialDelaySeconds: 30
             periodSeconds: 10
           resources:
             requests:
