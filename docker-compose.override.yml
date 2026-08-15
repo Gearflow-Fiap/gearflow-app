@@ -4,6 +4,8 @@ services:
   gearflow-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - NEW_RELIC_LICENSE_KEY=${NEWRELIC_LICENSE_KEY:-}
+      - NEW_RELIC_APP_NAME=gearflow-api-local
     ports:
       - "8080:8080"   # Scalar em http://localhost:8080/scalar/v1
     volumes:

@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gearflow-api
+  namespace: gearflow
+  labels:
+    app: gearflow-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gearflow-api
+  template:
+    metadata:
+      labels:
+        app: gearflow-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/gearflow-fiap/gearflow-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: gearflow-secret
+            - configMapRef:
+                name: gearflow-configmap
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gearflow-api-service
+  namespace: gearflow
+spec:
+  selector:
+    app: gearflow-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gearflow-api-hpa
+  namespace: gearflow
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: gearflow-api
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
