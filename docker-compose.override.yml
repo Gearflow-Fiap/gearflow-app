@@ -6,6 +6,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - NEW_RELIC_LICENSE_KEY=${NEWRELIC_LICENSE_KEY:-}
       - NEW_RELIC_APP_NAME=gearflow-api-local
+      # Exporta as métricas de negócio (OTLP) para o New Relic — mesma license key do agente APM.
+      - Otlp__Endpoint=${OTLP_ENDPOINT:-https://otlp.nr-data.net:4317}
+      - OTEL_EXPORTER_OTLP_HEADERS=api-key=${NEWRELIC_LICENSE_KEY:-}
     ports:
       - "8080:8080"   # Scalar em http://localhost:8080/scalar/v1
     volumes:

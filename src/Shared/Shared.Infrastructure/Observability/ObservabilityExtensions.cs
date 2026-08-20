@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Shared.Contracts;
 
 namespace Shared.Infrastructure.Observability;
 
@@ -57,7 +58,21 @@ public static class ObservabilityExtensions
                     .AddRuntimeInstrumentation()
                     .AddMeter(BusinessMeterName)
                     .AddPrometheusExporter();
+
+                // Métricas de negócio (serviceorders.created, serviceorder.status.duration,
+                // integration.errors) também saem via OTLP quando configurado — é o que alimenta
+                // o dashboard custom no New Relic (ver newrelic-dashboard.tf).
+                // Delta (não Cumulative): cada export manda só o incremento desde o export anterior,
+                // evitando somas/médias duplicadas quando o New Relic agrega várias leituras na janela.
+                if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+                    metrics.AddOtlpExporter((exporterOptions, readerOptions) =>
+                    {
+                        exporterOptions.Endpoint = new Uri(otlpEndpoint);
+                        readerOptions.TemporalityPreference = MetricReaderTemporalityPreference.Delta;
+                    });
             });
+
+        builder.Services.AddSingleton<IBusinessMetrics, BusinessMetrics>();
 
         return builder;
     }

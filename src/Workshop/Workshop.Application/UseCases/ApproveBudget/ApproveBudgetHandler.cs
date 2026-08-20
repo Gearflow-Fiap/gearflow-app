@@ -20,10 +20,11 @@ internal sealed class ApproveBudgetHandler : ICommandHandler<ApproveBudgetComman
     private readonly IPublisher _publisher;
     private readonly ICurrentActor _currentActor;
     private readonly TimeProvider _timeProvider;
+    private readonly IBusinessMetrics _metrics;
 
     public ApproveBudgetHandler(
         IServiceOrderRepository orders, IBudgetRepository budgets, IInventoryReservation inventory,
-        IPublisher publisher, ICurrentActor currentActor, TimeProvider timeProvider)
+        IPublisher publisher, ICurrentActor currentActor, TimeProvider timeProvider, IBusinessMetrics metrics)
     {
         _orders = orders;
         _budgets = budgets;
@@ -31,6 +32,7 @@ internal sealed class ApproveBudgetHandler : ICommandHandler<ApproveBudgetComman
         _publisher = publisher;
         _currentActor = currentActor;
         _timeProvider = timeProvider;
+        _metrics = metrics;
     }
 
     public async Task<Result> Handle(ApproveBudgetCommand command, CancellationToken ct)
@@ -58,6 +60,8 @@ internal sealed class ApproveBudgetHandler : ICommandHandler<ApproveBudgetComman
         var reservation = await _inventory.ReserveAsync(items, ct);
 
         var reserved = reservation.Status == ReservationStatus.Ok;
+        if (!reserved) _metrics.IntegrationError("Inventory.Reserve");
+
         var transition = reserved
             ? order.StartExecution(actor, now)
             : order.WaitingPartsOrConsumables(actor, now);
