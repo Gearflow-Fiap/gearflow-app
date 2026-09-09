@@ -34,6 +34,7 @@ public sealed class WorkshopTransitionHandlerTests
     private readonly IInventoryReservation _inventory = Substitute.For<IInventoryReservation>();
     private readonly IPublisher _publisher = Substitute.For<IPublisher>();
     private readonly ICurrentActor _actor = Substitute.For<ICurrentActor>();
+    private readonly IBusinessMetrics _metrics = Substitute.For<IBusinessMetrics>();
 
     public WorkshopTransitionHandlerTests() => _actor.Current.Returns(Actor.System);
 
@@ -97,7 +98,7 @@ public sealed class WorkshopTransitionHandlerTests
         order.Finalize(Actor.System, Now); // InExecution → Finalized
         _orders.GetByIdAsync(order.Id, Arg.Any<CancellationToken>()).Returns(order);
 
-        var handler = new DeliverServiceOrderHandler(_orders, _actor, TimeProvider.System);
+        var handler = new DeliverServiceOrderHandler(_orders, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new DeliverServiceOrderCommand(order.Id.Value), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -110,7 +111,7 @@ public sealed class WorkshopTransitionHandlerTests
         var order = NewReceived();
         _orders.GetByIdAsync(order.Id, Arg.Any<CancellationToken>()).Returns(order);
 
-        var handler = new DeliverServiceOrderHandler(_orders, _actor, TimeProvider.System);
+        var handler = new DeliverServiceOrderHandler(_orders, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new DeliverServiceOrderCommand(order.Id.Value), CancellationToken.None);
 
         result.IsFailure.Should().BeTrue();
@@ -268,7 +269,7 @@ public sealed class WorkshopTransitionHandlerTests
         _inventory.ConsumeAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>())
             .Returns(new ReservationResult(ReservationStatus.Ok));
 
-        var handler = new FinalizeServiceOrderHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System);
+        var handler = new FinalizeServiceOrderHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new FinalizeServiceOrderCommand(order.Id.Value), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -288,7 +289,7 @@ public sealed class WorkshopTransitionHandlerTests
             .Returns(new ReservationResult(ReservationStatus.Ok, null,
                 new List<LowStockItem> { new(InventoryItemType.Part, partId, "Peça", 1, 5) }));
 
-        var handler = new FinalizeServiceOrderHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System);
+        var handler = new FinalizeServiceOrderHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new FinalizeServiceOrderCommand(order.Id.Value), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -305,7 +306,7 @@ public sealed class WorkshopTransitionHandlerTests
         _inventory.ConsumeAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>())
             .Returns(new ReservationResult(ReservationStatus.Insufficient, "faltou"));
 
-        var handler = new FinalizeServiceOrderHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System);
+        var handler = new FinalizeServiceOrderHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new FinalizeServiceOrderCommand(order.Id.Value), CancellationToken.None);
 
         result.IsFailure.Should().BeTrue();
@@ -320,7 +321,7 @@ public sealed class WorkshopTransitionHandlerTests
         _orders.GetByIdAsync(order.Id, Arg.Any<CancellationToken>()).Returns(order);
         _budgets.GetByServiceOrderAsync(order.Id, Arg.Any<CancellationToken>()).Returns(budget);
 
-        var handler = new FinalizeServiceOrderHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System);
+        var handler = new FinalizeServiceOrderHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new FinalizeServiceOrderCommand(order.Id.Value), CancellationToken.None);
 
         result.IsFailure.Should().BeTrue();
