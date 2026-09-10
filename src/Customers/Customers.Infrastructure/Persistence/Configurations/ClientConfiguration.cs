@@ -1,4 +1,5 @@
 using Customers.Domain.Aggregates;
+using Customers.Domain.Enums;
 using Customers.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -26,6 +27,11 @@ internal sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
 
         builder.Property(c => c.Name).HasColumnName("name").HasMaxLength(200).IsRequired();
         builder.Property(c => c.Phone).HasColumnName("phone").HasMaxLength(30);
+
+        builder.Property(c => c.Status)
+            .HasColumnName("status").HasConversion<string>().HasMaxLength(20)
+            .HasDefaultValue(ClientStatus.Active)
+            .IsRequired();
 
         builder.Property(c => c.Email)
             .HasColumnName("email").HasMaxLength(320).IsRequired()

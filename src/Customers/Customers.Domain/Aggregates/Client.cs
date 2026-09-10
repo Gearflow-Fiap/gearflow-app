@@ -1,3 +1,4 @@
+using Customers.Domain.Enums;
 using Customers.Domain.ValueObjects;
 using Shared.Domain.Primitives;
 
@@ -17,6 +18,7 @@ public sealed class Client : AggregateRoot<ClientId>
     public Email Email { get; private set; }
     public string Phone { get; private set; }
     public Address Address { get; private set; }
+    public ClientStatus Status { get; private set; }
     public IReadOnlyCollection<Vehicle> Vehicles => _vehicles.AsReadOnly();
 
     private Client(ClientId id, Cpf? cpf, Cnpj? cnpj, string name, Email email, string phone, Address address)
@@ -28,6 +30,7 @@ public sealed class Client : AggregateRoot<ClientId>
         Email = email;
         Phone = phone;
         Address = address;
+        Status = ClientStatus.Active;
     }
 
     private Client() : base(ClientId.New())
@@ -84,6 +87,10 @@ public sealed class Client : AggregateRoot<ClientId>
         Address = address;
         return Result.Success();
     }
+
+    public void Activate() => Status = ClientStatus.Active;
+
+    public void Deactivate() => Status = ClientStatus.Inactive;
 
     public Vehicle AddVehicle(
         string licensePlate, string mark, string model, string color,

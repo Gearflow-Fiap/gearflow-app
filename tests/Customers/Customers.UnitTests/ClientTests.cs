@@ -1,4 +1,5 @@
 using Customers.Domain.Aggregates;
+using Customers.Domain.Enums;
 using Customers.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -56,6 +57,26 @@ public sealed class ClientTests
 
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("Email.Invalid");
+    }
+
+    [Fact]
+    public void Create_defaults_to_active_status()
+    {
+        var client = Client.Create(ValidCpf, null, "Zé", "z@x.com", "119", AnAddress()).Value;
+
+        client.Status.Should().Be(ClientStatus.Active);
+    }
+
+    [Fact]
+    public void Deactivate_then_activate_toggles_status()
+    {
+        var client = Client.Create(ValidCpf, null, "Zé", "z@x.com", "119", AnAddress()).Value;
+
+        client.Deactivate();
+        client.Status.Should().Be(ClientStatus.Inactive);
+
+        client.Activate();
+        client.Status.Should().Be(ClientStatus.Active);
     }
 
     [Fact]
