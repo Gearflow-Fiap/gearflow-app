@@ -66,8 +66,11 @@ if (!app.Environment.IsEnvironment("Testing"))
     await scope.ServiceProvider.GetRequiredService<IdentityDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<NotificationsDbContext>().Database.MigrateAsync();
 
-    // Seed de staff + massa de dados fictícios só em Development.
-    if (app.Environment.IsDevelopment())
+    // Seed de staff + massa de dados fictícios: sempre em Development, ou em outros
+    // ambientes via opt-in explícito (Seed__EnableDevData=true), ex. demo/homologação na AWS.
+    var seedDevData = app.Environment.IsDevelopment()
+        || app.Configuration.GetValue<bool>("Seed:EnableDevData");
+    if (seedDevData)
     {
         await IdentitySeeder.SeedAsync(app.Services);
         await DevDataSeeder.SeedAsync(app.Services);

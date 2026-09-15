@@ -4,6 +4,7 @@ using Shared.Contracts.IntegrationEvents.Inventory;
 using Shared.Domain.Primitives;
 using Shared.Domain.Security;
 using Workshop.Application.Abstractions;
+using Workshop.Domain.Enums;
 using Workshop.Domain.ValueObjects;
 
 namespace Workshop.Application.UseCases.FinalizeServiceOrder;
@@ -20,10 +21,11 @@ internal sealed class FinalizeServiceOrderHandler : ICommandHandler<FinalizeServ
     private readonly IPublisher _publisher;
     private readonly ICurrentActor _currentActor;
     private readonly TimeProvider _timeProvider;
+    private readonly IBusinessMetrics _metrics;
 
     public FinalizeServiceOrderHandler(
         IServiceOrderRepository orders, IBudgetRepository budgets, IInventoryReservation inventory,
-        IPublisher publisher, ICurrentActor currentActor, TimeProvider timeProvider)
+        IPublisher publisher, ICurrentActor currentActor, TimeProvider timeProvider, IBusinessMetrics metrics)
     {
         _orders = orders;
         _budgets = budgets;
@@ -31,6 +33,7 @@ internal sealed class FinalizeServiceOrderHandler : ICommandHandler<FinalizeServ
         _publisher = publisher;
         _currentActor = currentActor;
         _timeProvider = timeProvider;
+        _metrics = metrics;
     }
 
     public async Task<Result> Handle(FinalizeServiceOrderCommand command, CancellationToken ct)
@@ -46,8 +49,15 @@ internal sealed class FinalizeServiceOrderHandler : ICommandHandler<FinalizeServ
 
         var now = _timeProvider.GetUtcNow().UtcDateTime;
 
+        var executionStart = order.Histories
+            .Where(h => h.Status == ServiceOrderStatus.InExecution)
+            .OrderBy(h => h.CreatedOn).FirstOrDefault();
+
         var transition = order.Finalize(_currentActor.Current, now);
         if (transition.IsFailure) return transition;
+
+        if (executionStart is not null)
+            _metrics.ServiceOrderStatusDuration("Execucao", (now - executionStart.CreatedOn).TotalMinutes);
 
         var items = budget.Parts
             .Select(p => new ReservationItem(InventoryItemType.Part, p.PartId, p.Quantity))
@@ -56,7 +66,10 @@ internal sealed class FinalizeServiceOrderHandler : ICommandHandler<FinalizeServ
 
         var consume = await _inventory.ConsumeAsync(items, ct);
         if (consume.Status != ReservationStatus.Ok)
+        {
+            _metrics.IntegrationError("Inventory.Consume");
             return Result.Failure(Error.Conflict("Inventory.ConsumeFailed", consume.Detail ?? "Falha ao consumir estoque."));
+        }
 
         await _orders.SaveChangesAsync(ct);
 

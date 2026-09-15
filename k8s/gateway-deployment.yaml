@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gearflow-gateway
+  namespace: gearflow
+  labels:
+    app: gearflow-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gearflow-gateway
+  template:
+    metadata:
+      labels:
+        app: gearflow-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: ghcr.io/gearflow-fiap/gearflow-gateway:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: gearflow-configmap
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"

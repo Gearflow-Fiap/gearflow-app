@@ -7,8 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Identity.Infrastructure;
 
 /// <summary>
-/// Semeia um usuário de staff padrão em desenvolvimento (paridade com o AdminSeeder legado), para
-/// permitir login no demo. Idempotente: só cria se não houver nenhum usuário.
+/// Semeia um usuário de staff padrão (paridade com o AdminSeeder legado), para permitir login no demo.
+/// Idempotente: só cria se não houver nenhum usuário. Roda em Development, ou em outros ambientes se
+/// <c>Seed:EnableDevData</c> for <c>true</c>.
 /// </summary>
 public static class IdentitySeeder
 {

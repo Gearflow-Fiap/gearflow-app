@@ -18,13 +18,16 @@ internal sealed class LowStockAlertHandler : INotificationHandler<LowStockAlertI
     private readonly INotificationRepository _repository;
     private readonly IEmailSender _emailSender;
     private readonly ILogger<LowStockAlertHandler> _logger;
+    private readonly IBusinessMetrics _metrics;
 
     public LowStockAlertHandler(
-        INotificationRepository repository, IEmailSender emailSender, ILogger<LowStockAlertHandler> logger)
+        INotificationRepository repository, IEmailSender emailSender, ILogger<LowStockAlertHandler> logger,
+        IBusinessMetrics metrics)
     {
         _repository = repository;
         _emailSender = emailSender;
         _logger = logger;
+        _metrics = metrics;
     }
 
     public async Task Handle(LowStockAlertIntegrationEvent e, CancellationToken ct)
@@ -45,6 +48,7 @@ internal sealed class LowStockAlertHandler : INotificationHandler<LowStockAlertI
         }
         catch (Exception ex)
         {
+            _metrics.IntegrationError("Notifications.Email");
             _logger.LogWarning(ex, "Falha ao enviar e-mail de estoque baixo para {To}", StockEmail);
         }
     }

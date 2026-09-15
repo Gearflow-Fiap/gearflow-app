@@ -1,9 +1,11 @@
 using MediatR;
+using Shared.Contracts;
 using Shared.Contracts.IntegrationEvents.Workshop;
 using Shared.Domain.Primitives;
 using Shared.Domain.Security;
 using Workshop.Application.Abstractions;
 using Workshop.Domain.Aggregates.BudgetModel;
+using Workshop.Domain.Enums;
 using Workshop.Domain.ValueObjects;
 
 namespace Workshop.Application.UseCases.FinalizeDiagnostic;
@@ -22,10 +24,12 @@ internal sealed class FinalizeDiagnosticHandler : ICommandHandler<FinalizeDiagno
     private readonly IPublisher _publisher;
     private readonly ICurrentActor _currentActor;
     private readonly TimeProvider _timeProvider;
+    private readonly IBusinessMetrics _metrics;
 
     public FinalizeDiagnosticHandler(
         IServiceOrderRepository orders, IBudgetRepository budgets, IPricingReader pricing,
-        ICustomerContactReader contacts, IPublisher publisher, ICurrentActor currentActor, TimeProvider timeProvider)
+        ICustomerContactReader contacts, IPublisher publisher, ICurrentActor currentActor, TimeProvider timeProvider,
+        IBusinessMetrics metrics)
     {
         _orders = orders;
         _budgets = budgets;
@@ -34,6 +38,7 @@ internal sealed class FinalizeDiagnosticHandler : ICommandHandler<FinalizeDiagno
         _publisher = publisher;
         _currentActor = currentActor;
         _timeProvider = timeProvider;
+        _metrics = metrics;
     }
 
     public async Task<Result> Handle(FinalizeDiagnosticCommand command, CancellationToken ct)
@@ -44,8 +49,17 @@ internal sealed class FinalizeDiagnosticHandler : ICommandHandler<FinalizeDiagno
 
         var now = _timeProvider.GetUtcNow().UtcDateTime;
 
+        // Duração da fase de diagnóstico (InDiagnostic → AwaitingApproval) — mesma janela usada em
+        // GetExecutionAverageHandler, emitida em tempo real para o dashboard New Relic.
+        var diagnosticStart = order.Histories
+            .Where(h => h.Status == ServiceOrderStatus.InDiagnostic)
+            .OrderBy(h => h.CreatedOn).FirstOrDefault();
+
         var transition = order.FinalizeDiagnostic(_currentActor.Current, now);
         if (transition.IsFailure) return transition;
+
+        if (diagnosticStart is not null)
+            _metrics.ServiceOrderStatusDuration("Diagnostico", (now - diagnosticStart.CreatedOn).TotalMinutes);
 
         var jobIds = order.RequestedJobs.Select(j => j.JobId).ToList();
         var partIds = order.RequestedParts.Select(p => p.PartId).ToList();

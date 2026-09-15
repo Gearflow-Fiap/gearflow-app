@@ -1,3 +1,4 @@
+using Shared.Contracts;
 using Shared.Domain.Primitives;
 using Shared.Domain.Security;
 using Workshop.Application.Abstractions;
@@ -11,13 +12,15 @@ internal sealed class CreateServiceOrderHandler : ICommandHandler<CreateServiceO
     private readonly IServiceOrderRepository _repository;
     private readonly ICurrentActor _currentActor;
     private readonly TimeProvider _timeProvider;
+    private readonly IBusinessMetrics _metrics;
 
     public CreateServiceOrderHandler(
-        IServiceOrderRepository repository, ICurrentActor currentActor, TimeProvider timeProvider)
+        IServiceOrderRepository repository, ICurrentActor currentActor, TimeProvider timeProvider, IBusinessMetrics metrics)
     {
         _repository = repository;
         _currentActor = currentActor;
         _timeProvider = timeProvider;
+        _metrics = metrics;
     }
 
     public async Task<Result<ServiceOrderDto>> Handle(CreateServiceOrderCommand command, CancellationToken ct)
@@ -34,6 +37,7 @@ internal sealed class CreateServiceOrderHandler : ICommandHandler<CreateServiceO
 
         await _repository.AddAsync(order, ct);
         await _repository.SaveChangesAsync(ct);
+        _metrics.ServiceOrderCreated();
 
         return Result.Success(ServiceOrderDto.FromAggregate(order));
     }

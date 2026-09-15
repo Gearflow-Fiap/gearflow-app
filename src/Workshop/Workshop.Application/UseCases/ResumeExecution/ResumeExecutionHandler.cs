@@ -17,16 +17,18 @@ internal sealed class ResumeExecutionHandler : ICommandHandler<ResumeExecutionCo
     private readonly IInventoryReservation _inventory;
     private readonly ICurrentActor _currentActor;
     private readonly TimeProvider _timeProvider;
+    private readonly IBusinessMetrics _metrics;
 
     public ResumeExecutionHandler(
         IServiceOrderRepository orders, IBudgetRepository budgets, IInventoryReservation inventory,
-        ICurrentActor currentActor, TimeProvider timeProvider)
+        ICurrentActor currentActor, TimeProvider timeProvider, IBusinessMetrics metrics)
     {
         _orders = orders;
         _budgets = budgets;
         _inventory = inventory;
         _currentActor = currentActor;
         _timeProvider = timeProvider;
+        _metrics = metrics;
     }
 
     public async Task<Result> Handle(ResumeExecutionCommand command, CancellationToken ct)
@@ -47,8 +49,11 @@ internal sealed class ResumeExecutionHandler : ICommandHandler<ResumeExecutionCo
 
         var reservation = await _inventory.ReserveAsync(items, ct);
         if (reservation.Status != ReservationStatus.Ok)
+        {
+            _metrics.IntegrationError("Inventory.Reserve");
             return Result.Failure(Error.Conflict("Inventory.StillInsufficient",
                 reservation.Detail ?? "Estoque ainda insuficiente para retomar a execução."));
+        }
 
         var transition = order.ResumeExecution(_currentActor.Current, _timeProvider.GetUtcNow().UtcDateTime);
         if (transition.IsFailure) return transition;

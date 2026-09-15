@@ -26,6 +26,7 @@ public sealed class ServiceOrderHandlerTests
     private readonly IInventoryReservation _inventory = Substitute.For<IInventoryReservation>();
     private readonly IPublisher _publisher = Substitute.For<IPublisher>();
     private readonly ICurrentActor _actor = Substitute.For<ICurrentActor>();
+    private readonly IBusinessMetrics _metrics = Substitute.For<IBusinessMetrics>();
 
     public ServiceOrderHandlerTests() => _actor.Current.Returns(Actor.System);
 
@@ -49,7 +50,7 @@ public sealed class ServiceOrderHandlerTests
         _inventory.ReserveAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>())
             .Returns(new ReservationResult(ReservationStatus.Ok));
 
-        var handler = new ApproveBudgetHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System);
+        var handler = new ApproveBudgetHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new ApproveBudgetCommand(order.Id.Value), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -68,7 +69,7 @@ public sealed class ServiceOrderHandlerTests
         _inventory.ReserveAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>())
             .Returns(new ReservationResult(ReservationStatus.Insufficient, "sem estoque"));
 
-        var handler = new ApproveBudgetHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System);
+        var handler = new ApproveBudgetHandler(_orders, _budgets, _inventory, _publisher, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new ApproveBudgetCommand(order.Id.Value), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -102,7 +103,7 @@ public sealed class ServiceOrderHandlerTests
         _inventory.ReserveAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>())
             .Returns(new ReservationResult(ReservationStatus.Ok));
 
-        var handler = new ResumeExecutionHandler(_orders, _budgets, _inventory, _actor, TimeProvider.System);
+        var handler = new ResumeExecutionHandler(_orders, _budgets, _inventory, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new ResumeExecutionCommand(order.Id.Value), CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
@@ -119,7 +120,7 @@ public sealed class ServiceOrderHandlerTests
         _inventory.ReserveAsync(Arg.Any<IReadOnlyList<ReservationItem>>(), Arg.Any<CancellationToken>())
             .Returns(new ReservationResult(ReservationStatus.Insufficient, "ainda sem estoque"));
 
-        var handler = new ResumeExecutionHandler(_orders, _budgets, _inventory, _actor, TimeProvider.System);
+        var handler = new ResumeExecutionHandler(_orders, _budgets, _inventory, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(new ResumeExecutionCommand(order.Id.Value), CancellationToken.None);
 
         result.IsFailure.Should().BeTrue();
@@ -146,7 +147,7 @@ public sealed class ServiceOrderHandlerTests
         contacts.GetByVehicleAsync(order.VehicleId, Arg.Any<CancellationToken>())
             .Returns(new CustomerContact("João", "joao@x.com"));
 
-        var handler = new FinalizeDiagnosticHandler(_orders, _budgets, pricing, contacts, _publisher, _actor, TimeProvider.System);
+        var handler = new FinalizeDiagnosticHandler(_orders, _budgets, pricing, contacts, _publisher, _actor, TimeProvider.System, _metrics);
         var result = await handler.Handle(
             new FinalizeDiagnosticCommand(order.Id.Value, Array.Empty<DiagnosticConsumableInput>()), CancellationToken.None);
 

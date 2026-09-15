@@ -16,6 +16,7 @@ public sealed class NotificationHandlerTests
     private static readonly DateTime Now = DateTime.UtcNow;
     private readonly INotificationRepository _repo = Substitute.For<INotificationRepository>();
     private readonly IEmailSender _email = Substitute.For<IEmailSender>();
+    private readonly IBusinessMetrics _metrics = Substitute.For<IBusinessMetrics>();
 
     private static IConfiguration Config() =>
         new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
@@ -68,7 +69,7 @@ public sealed class NotificationHandlerTests
     [Fact]
     public async Task LowStockAlert_records_and_tries_email()
     {
-        var handler = new LowStockAlertHandler(_repo, _email, NullLogger<LowStockAlertHandler>.Instance);
+        var handler = new LowStockAlertHandler(_repo, _email, NullLogger<LowStockAlertHandler>.Instance, _metrics);
         await handler.Handle(new LowStockAlertIntegrationEvent(Guid.NewGuid(), Now, InventoryItemType.Part, Guid.NewGuid(), "Filtro", 3, 5), CancellationToken.None);
 
         await _repo.Received(1).AddAsync(Arg.Any<Notification>(), Arg.Any<CancellationToken>());

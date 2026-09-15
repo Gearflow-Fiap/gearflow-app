@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gearflow-gateway-service
+  namespace: gearflow
+spec:
+  selector:
+    app: gearflow-gateway
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
