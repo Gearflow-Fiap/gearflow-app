@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GearFlow — Diagrama de Componentes</title>
+
+    <style>
+        :root {
+            --background: #f4f6f8;
+            --surface: #ffffff;
+            --text: #17202a;
+            --muted: #667085;
+            --border: #d9dee5;
+            --code-background: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                Inter,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 36px 6vw 28px;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        main {
+            width: min(1500px, 92vw);
+            margin: 30px auto 60px;
+        }
+
+        .diagram-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .diagram-card h2 {
+            margin: 0 0 20px;
+            font-size: 21px;
+        }
+
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 700px;
+            padding: 20px 10px;
+        }
+
+        .mermaid {
+            width: 100%;
+            text-align: center;
+        }
+
+        details {
+            margin-top: 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        summary {
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        pre {
+            margin-top: 12px;
+            overflow-x: auto;
+            background: var(--code-background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family:
+                Consolas,
+                "Courier New",
+                monospace;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            padding: 20px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            header {
+                border: none;
+            }
+
+            .diagram-card {
+                box-shadow: none;
+                border: none;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            details {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>GearFlow — Diagrama de Componentes</h1>
+</header>
+
+
+<main>
+
+        <div class="diagram-container">
+            <div class="mermaid">
+flowchart TB
+
+    subgraph USERS["Usuários"]
+        STAFF["Funcionário da oficina"]
+        CUSTOMER["Cliente"]
+        WEB["Frontend React"]
+    end
+
+    subgraph AWS["AWS Cloud"]
+
+        ALB["AWS ALB / Ingress<br/>TLS / ACM<br/>Entrada de rede"]
+
+        subgraph EKS["Amazon EKS"]
+
+            GW["YARP API Gateway<br/>Routing<br/>CORS<br/>Rate Limiting"]
+
+            subgraph APP["GearFlow.Api"]
+                ID["Identity"]
+                CU["Customers"]
+                CA["Catalog"]
+                IV["Inventory"]
+                WO["Workshop"]
+                NO["Notifications"]
+            end
+
+            HPA["Horizontal Pod Autoscaler"]
+
+        end
+
+        subgraph AUTH["Serverless Authentication"]
+            L1["Lambda validate-cpf"]
+            L2["Lambda check-client"]
+            L3["Lambda generate-token"]
+        end
+
+        DB[("Amazon RDS<br/>SQL Server 2022")]
+
+        SECRETS["AWS Secrets Manager"]
+
+        CW["CloudWatch"]
+
+    end
+
+    subgraph OBS["Observabilidade"]
+        OT["OpenTelemetry"]
+        PROM["Prometheus"]
+        OTLP["OTLP Collector /<br/>New Relic / Datadog"]
+    end
+
+    STAFF --> WEB
+    CUSTOMER --> WEB
+
+    WEB -->|"HTTPS"| ALB
+    ALB --> GW
+    GW --> APP
+
+    CUSTOMER --> L1
+    L1 --> L2
+    L2 --> DB
+    L2 --> L3
+    L3 -->|"JWT"| CUSTOMER
+
+    APP --> DB
+    APP --> SECRETS
+
+    HPA --> GW
+    HPA --> APP
+
+    APP --> OT
+    OT --> PROM
+    OT --> OTLP
+
+    APP --> CW
+            </div>
+        </div>
+</main>
+
+
+<footer>
+    GearFlow — Arquitetura e documentação técnica
+</footer>
+
+
+<!-- ============================================================= -->
+<!-- MERMAID                                                        -->
+<!-- ============================================================= -->
+
+<script type="module">
+
+    import mermaid from
+        "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+    mermaid.initialize({
+        startOnLoad: true,
+
+        securityLevel: "loose",
+
+        theme: "default",
+
+        flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true
+        },
+
+        sequence: {
+            useMaxWidth: true
+        },
+
+        er: {
+            useMaxWidth: true
+        }
+    });
+
+</script>
+
+</body>
+</html>
